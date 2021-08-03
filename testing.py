@@ -1,7 +1,5 @@
-for i in range(5):
-    print(i)
+def testMe(*args):
+    for x in args:
+        print(x)
 
-print("#########")
-
-for i in range(1,5):
-    print(i)
+testMe(2,623,"AsSS", (20,4))

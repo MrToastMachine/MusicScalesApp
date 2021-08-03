@@ -1,3 +1,4 @@
+from tkinter import mainloop
 from typing import overload
 import pygame
 import time
@@ -12,13 +13,39 @@ win = pygame.display.set_mode(RES)
 #COLOURS
 white = (255, 255, 255)
 black = (  0,   0,   0)
-almost_black = (0, 18, 25)
+dark_teal = (38, 70, 83)
+light_teal = (42, 157, 143)
+yellow = (233, 196, 106)
 orange = (231, 111, 81)
-yellow = (255, 255, 0)
+red_orange = (231, 111, 81)
+
 
 #PIANO ATTRIBUTES
 sharps = [2,4,7,9,11,14,16,19,21,23] # from C to C
 allNotes = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B']
+
+class Block():
+    components = []
+    def __init__(self, x, y, width, height, colour, text=""):
+        self.posX = x
+        self.posY = y
+        self.width = width
+        self.height = height
+        self.colour = colour
+        self.mainText = text
+        Block.components.append(self)
+    
+    @classmethod
+    def drawMenu(cls):
+        for com in cls.components:
+            pygame.draw.rect(win, com.colour, (com.posX, com.posY, com.width, com.height))
+            if len(com.mainText) > 0:
+                text = myFont.render(com.mainText, 1, red_orange)
+                textPosX = RES[0] / 2 - text.get_width() / 2
+                yOffset = 3
+                textPosY = com.posY + com.height/2 - text.get_height() / 2 + 3
+                win.blit(text, (textPosX, textPosY))
+
 
 class Key():
     def __init__(self, id, note, xPos, yPos, isSharp):
@@ -83,21 +110,43 @@ class Keyboard():
         for key in self.allKeys:
             print(key.id, key.note, key.xPos)
 
+def ButtonSetup():
+    width = 300
+    height = 50
+    xPos = (RES[0] / 2) - (width / 2)
+    yPos = mainMenu.posY + round(mainMenu.height * 0.6)
+
+    return Block(xPos, yPos, width, height, yellow, text="Settings")
+
 def drawFrame():
-    win.fill(orange)
+    win.fill(BG_COLOUR)
 
     myKeyboard.drawWhites()
     myKeyboard.drawSharps()
+    
+    Block.drawMenu()
 
     pygame.display.update()
 
 
+BG_COLOUR = dark_teal
+
+#FONT SETUP
+myFont = pygame.font.SysFont('Bookman', 40)
+
 myKeyboard = Keyboard()
+mainMenu = Block(0, 500, RES[0], RES[1] - 500, light_teal)
+settingsButton = ButtonSetup()
+
 running = True
 while running:
+    clock.tick(FPS)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            mousePos = pygame.mouse.get_pos()
+            print(mousePos)
         elif event.type == pygame.KEYDOWN:
             if allNotes.count(event.unicode.upper()) >= 1:
                 myKeyboard.highlightKey(event.unicode)
