@@ -1,5 +1,6 @@
-def testMe(*args):
-    for x in args:
-        print(x)
+import json
 
-testMe(2,623,"AsSS", (20,4))
+with open('jsonScaleStorage.json', 'r') as file:
+    data = json.load(file)
+    for element in data:
+        print(element, data[element])

@@ -10,16 +10,6 @@ RES = (950, 700)
 clock = pygame.time.Clock()
 win = pygame.display.set_mode(RES)
 
-#COLOURS
-white = (255, 255, 255)
-black = (  0,   0,   0)
-dark_teal = (38, 70, 83)
-light_teal = (42, 157, 143)
-yellow = (233, 196, 106)
-orange = (231, 111, 81)
-red_orange = (231, 111, 81)
-
-
 #PIANO ATTRIBUTES
 sharps = [2,4,7,9,11,14,16,19,21,23] # from C to C
 allNotes = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B']
@@ -41,9 +31,9 @@ class Block():
             pygame.draw.rect(win, com.colour, (com.posX, com.posY, com.width, com.height))
             if len(com.mainText) > 0:
                 text = myFont.render(com.mainText, 1, red_orange)
-                textPosX = RES[0] / 2 - text.get_width() / 2
+                textPosX = int(RES[0] / 2 - text.get_width() / 2)
                 yOffset = 3
-                textPosY = com.posY + com.height/2 - text.get_height() / 2 + 3
+                textPosY = int(com.posY + com.height/2 - text.get_height() / 2 + 3)
                 win.blit(text, (textPosX, textPosY))
 
 
@@ -96,14 +86,14 @@ class Keyboard():
     def drawWhites(self):
         for key in self.allKeys:
             if not key.isSharp:
-                colour = yellow if key.highlighted else white 
+                colour = colourScheme['active_key'] if key.highlighted else white 
                 pygame.draw.rect(win, colour, (key.xPos, key.yPos, self.keyWidth-2, self.keyHeight))
 
     def drawSharps(self):
         for key in self.allKeys:
             if key.isSharp:
-                colour = yellow if key.highlighted else black 
-                pygame.draw.rect(win, colour, (key.xPos, key.yPos, self.keyWidth / 2 + 3, self.keyHeight/2 + 10))
+                colour = colourScheme['active_key'] if key.highlighted else black 
+                pygame.draw.rect(win, colour, (key.xPos, key.yPos, int(self.keyWidth / 2 + 3), int(self.keyHeight/2 + 10)))
 
     def showKeysInfo(self):
         print("ID", "NOTE")
@@ -113,13 +103,13 @@ class Keyboard():
 def ButtonSetup():
     width = 300
     height = 50
-    xPos = (RES[0] / 2) - (width / 2)
-    yPos = mainMenu.posY + round(mainMenu.height * 0.6)
+    xPos = int((RES[0] / 2) - (width / 2))
+    yPos = int(mainMenu.posY + round(mainMenu.height * 0.6))
 
-    return Block(xPos, yPos, width, height, yellow, text="Settings")
+    return Block(xPos, yPos, width, height, colourScheme['buttonText'], text="Settings")
 
 def drawFrame():
-    win.fill(BG_COLOUR)
+    win.fill(colourScheme['background'])
 
     myKeyboard.drawWhites()
     myKeyboard.drawSharps()
@@ -129,13 +119,29 @@ def drawFrame():
     pygame.display.update()
 
 
-BG_COLOUR = dark_teal
+#COLOURS
+white = (255, 255, 255)
+black = (  0,   0,   0)
+dark_teal = (38, 70, 83)
+light_teal = (42, 157, 143)
+yellow = (233, 196, 106)
+orange = (231, 111, 81)
+red_orange = (231, 111, 81)
+
+colourScheme = {
+    "mainMenu": dark_teal,
+    "background": red_orange,
+    "buttonText": yellow,
+    "button_bg": orange,
+    "active_key": yellow
+
+}
 
 #FONT SETUP
 myFont = pygame.font.SysFont('Bookman', 40)
 
 myKeyboard = Keyboard()
-mainMenu = Block(0, 500, RES[0], RES[1] - 500, light_teal)
+mainMenu = Block(0, 500, RES[0], RES[1] - 500, colourScheme['mainMenu'])
 settingsButton = ButtonSetup()
 
 running = True
