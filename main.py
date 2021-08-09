@@ -1,6 +1,7 @@
-from tkinter import mainloop
-from typing import overload
+from tkinter import *
+from tkinter import messagebox
 import pygame
+import json
 import time
 
 pygame.init()
@@ -30,7 +31,7 @@ class Block():
         for com in cls.components:
             pygame.draw.rect(win, com.colour, (com.posX, com.posY, com.width, com.height))
             if len(com.mainText) > 0:
-                text = myFont.render(com.mainText, 1, red_orange)
+                text = myFont.render(com.mainText, 1, colourScheme['buttonText'])
                 textPosX = int(RES[0] / 2 - text.get_width() / 2)
                 yOffset = 3
                 textPosY = int(com.posY + com.height/2 - text.get_height() / 2 + 3)
@@ -106,7 +107,58 @@ def ButtonSetup():
     xPos = int((RES[0] / 2) - (width / 2))
     yPos = int(mainMenu.posY + round(mainMenu.height * 0.6))
 
-    return Block(xPos, yPos, width, height, colourScheme['buttonText'], text="Settings")
+    return Block(xPos, yPos, width, height, colourScheme['button_bg'], text="Settings")
+
+def buttonPressed(mPos):
+    x, y = mPos
+    if x > settingsButton.posX and x < settingsButton.posX + settingsButton.width:
+        if y > settingsButton.posY and y < settingsButton.posY + settingsButton.height:
+            return True
+    else: 
+        return False
+
+def readInScales():
+    with open('jsonScaleStorage.json', 'r') as sFile:
+        return json.load(sFile)
+
+def openSettings():
+
+    def addScale():
+        pass
+
+    def showHelp():
+        messagebox.showinfo("Help", "")
+
+    tkWindow = Tk()
+    tkWindow.geometry('200x160+500+500')
+    tkWindow.title("Scaley")
+
+    scalesDict = readInScales()
+    scaleNames = [s for s in scalesDict]
+    scale = StringVar(tkWindow, scaleNames[0])
+
+    note = StringVar(tkWindow, allNotes[0])
+
+    newScale = StringVar(tkWindow, "")
+
+    Label(tkWindow, text="Choose Scale:").grid(row=0, column=0, padx=10, pady=10)
+    Label(tkWindow, text="Root Note:").grid(row=1, column=0, padx=10)
+    Label(tkWindow, text="Add New Scale (eg: 1,3,4,5,6):").grid(row=2, columnspan=2, padx=10)
+
+    scaleOptions = OptionMenu(tkWindow, scale, *scaleNames)
+    scaleOptions.grid(row=0, column=1, padx=10)
+
+    noteOptions = OptionMenu(tkWindow, note, *allNotes)
+    noteOptions.grid(row=1, column=1, padx=10)
+
+    scaleEntry = Entry(tkWindow, textvariable=newScale)
+    scaleEntry.grid(row=3, columnspan=2)
+
+    Button(tkWindow, text="Add Scale", command=addScale).grid(row=4,column=0, pady=10)
+    Button(tkWindow, text="Help", command=showHelp).grid(row=4,column=1)
+
+
+    mainloop()
 
 def drawFrame():
     win.fill(colourScheme['background'])
@@ -118,6 +170,9 @@ def drawFrame():
 
     pygame.display.update()
 
+def cycleColour(section):
+    current = colourScheme[section]
+    newIndex = allColours.index(current)
 
 #COLOURS
 white = (255, 255, 255)
@@ -125,16 +180,25 @@ black = (  0,   0,   0)
 dark_teal = (38, 70, 83)
 light_teal = (42, 157, 143)
 yellow = (233, 196, 106)
-orange = (231, 111, 81)
+orange = (244, 162, 97)
 red_orange = (231, 111, 81)
 
-colourScheme = {
-    "mainMenu": dark_teal,
-    "background": red_orange,
-    "buttonText": yellow,
-    "button_bg": orange,
-    "active_key": yellow
+allColours = [
+    white,
+    black,
+    dark_teal,
+    light_teal,
+    yellow,
+    orange,
+    red_orange
+]
 
+colourScheme = {
+    "mainMenu": yellow,
+    "background": red_orange,
+    "buttonText": white,
+    "button_bg": light_teal,
+    "active_key": yellow
 }
 
 #FONT SETUP
@@ -152,7 +216,8 @@ while running:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mousePos = pygame.mouse.get_pos()
-            print(mousePos)
+            if buttonPressed(mousePos):
+                openSettings()
         elif event.type == pygame.KEYDOWN:
             if allNotes.count(event.unicode.upper()) >= 1:
                 myKeyboard.highlightKey(event.unicode)
@@ -168,5 +233,6 @@ Thoughts:
 - Create new scale feature (Enter numbers for each note in scale)
 
 - Later... Add in chord mode to display chords
+    + 1st, 3rd and 5th etc...
 - Much much later >> Show notes on guitar frets
 """
