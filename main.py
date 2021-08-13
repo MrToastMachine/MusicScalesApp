@@ -124,13 +124,35 @@ def readInScales():
 def openSettings():
 
     def addScale():
-        pass
+        global scalesDict, scaleNames, scale
+
+        name = newScaleName.get()
+        scaleString = newScaleNotes.get()
+
+        if not name=="" and not scaleString=="":
+            try:
+                scaleArray = [int(n) for n in scaleString.split(',')]
+                oldScales = readInScales()
+                oldScales[name] = scaleArray
+
+                with open('jsonScaleStorage.json', 'w') as file:
+                    json.dump(oldScales, file)
+
+                scalesDict = readInScales()
+                scaleNames = [s for s in scalesDict]
+                scale = StringVar(tkWindow, scaleNames[0])
+
+                
+            except:
+                print("That wasnt in the correct format deary")
+
+        print(name, scale)
 
     def showHelp():
-        messagebox.showinfo("Help", "")
+        messagebox.showinfo("Help", "To add a new scale, enter the name of the scale and the notes which make up the scale, with note #1 being the root note")
 
     tkWindow = Tk()
-    tkWindow.geometry('200x160+500+500')
+    tkWindow.geometry('290x190+500+500')
     tkWindow.title("Scaley")
 
     scalesDict = readInScales()
@@ -139,11 +161,17 @@ def openSettings():
 
     note = StringVar(tkWindow, allNotes[0])
 
-    newScale = StringVar(tkWindow, "")
+    newScaleName = StringVar(tkWindow, "")
+    newScaleNotes = StringVar(tkWindow, "")
+
 
     Label(tkWindow, text="Choose Scale:").grid(row=0, column=0, padx=10, pady=10)
     Label(tkWindow, text="Root Note:").grid(row=1, column=0, padx=10)
-    Label(tkWindow, text="Add New Scale (eg: 1,3,4,5,6):").grid(row=2, columnspan=2, padx=10)
+    Label(tkWindow, text="Add New Scale:").grid(row=2, columnspan=2, padx=10)
+
+    Label(tkWindow, text="Scale Name:").grid(row=3, column=0)
+    Label(tkWindow, text="Notes (eg: 1,3,4,5,6):").grid(row=3, column=1)
+
 
     scaleOptions = OptionMenu(tkWindow, scale, *scaleNames)
     scaleOptions.grid(row=0, column=1, padx=10)
@@ -151,11 +179,14 @@ def openSettings():
     noteOptions = OptionMenu(tkWindow, note, *allNotes)
     noteOptions.grid(row=1, column=1, padx=10)
 
-    scaleEntry = Entry(tkWindow, textvariable=newScale)
-    scaleEntry.grid(row=3, columnspan=2)
+    scaleNameEntry = Entry(tkWindow, textvariable=newScaleName)
+    scaleNameEntry.grid(row=4, column=0, padx=10)
 
-    Button(tkWindow, text="Add Scale", command=addScale).grid(row=4,column=0, pady=10)
-    Button(tkWindow, text="Help", command=showHelp).grid(row=4,column=1)
+    scaleNotesEntry = Entry(tkWindow, textvariable=newScaleNotes)
+    scaleNotesEntry.grid(row=4, column=1, padx=10)
+
+    Button(tkWindow, text="Add Scale", command=addScale).grid(row=6,column=0, pady=10)
+    Button(tkWindow, text="Help", command=showHelp).grid(row=6,column=1)
 
 
     mainloop()
