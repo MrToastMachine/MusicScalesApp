@@ -14,7 +14,7 @@ win = pygame.display.set_mode(RES)
 
 #PIANO ATTRIBUTES
 sharps = [2,4,7,9,11,14,16,19,21,23] # from C to C
-allNotes = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B']
+allNotes = ['c','c#','d','d#','e','f','f#','g','g#','a','a#','b']
 
 class Block():
     components = []
@@ -79,28 +79,48 @@ class Keyboard():
             newKey = Key(i+1, note, xPos, yPos, isSharp)
             self.allKeys.append(newKey)
     
+    def clearHighlights(self):
+        for key in self.allKeys:
+            key.highlighted = False
+
     def highlightKey(self, note):
         for key in self.allKeys:
             if key.note.lower() == note:
                 key.highlighted = not key.highlighted
-                print(f"ID: {key.id}")
     
+    def highlightScale(self):
+        self.clearHighlights()
+        rootPos = allNotes.index(CURRENT_ROOT_NOTE.lower())
+        currentScaleArray = allScales[CURRENT_SCALE]
+
+        for i in currentScaleArray:
+            notePos = (rootPos + i - 1) % 12
+            note = allNotes[notePos]
+            self.highlightKey(note)
+
+
     def drawWhites(self):
         for key in self.allKeys:
             if not key.isSharp:
                 colour = colourScheme['active_key'] if key.highlighted else white 
                 pygame.draw.rect(win, colour, (key.xPos, key.yPos, self.keyWidth-2, self.keyHeight))
+                text = myFont.render(key.note, 1, black)
+                win.blit(text, (key.xPos+15, key.yPos - 30))
+
 
     def drawSharps(self):
         for key in self.allKeys:
             if key.isSharp:
-                colour = colourScheme['active_key'] if key.highlighted else black 
+                colour = colourScheme['active_key_sharp'] if key.highlighted else black 
                 pygame.draw.rect(win, colour, (key.xPos, key.yPos, int(self.keyWidth / 2 + 3), int(self.keyHeight/2 + 10)))
+                text = myFont.render(key.note, 1, black)
+                win.blit(text, (key.xPos, key.yPos - 50))
 
     def showKeysInfo(self):
         print("ID", "NOTE")
         for key in self.allKeys:
             print(key.id, key.note, key.xPos)
+
 
 def ButtonSetup():
     width = 300
@@ -250,7 +270,8 @@ colourScheme = {
     "background": red_orange,
     "buttonText": white,
     "button_bg": light_teal,
-    "active_key": yellow
+    "active_key": light_teal,
+    "active_key_sharp": yellow
 }
 
 #FONT SETUP
@@ -260,10 +281,10 @@ myKeyboard = Keyboard()
 mainMenu = Block(0, 500, RES[0], RES[1] - 500, colourScheme['mainMenu'])
 settingsButton = ButtonSetup()
 
+
+allScales = readInScales()
 CURRENT_ROOT_NOTE = "C"
 CURRENT_SCALE = "Major"
-
-
 
 running = True
 while running:
@@ -276,10 +297,13 @@ while running:
             if buttonPressed(mousePos):
                 openSettings()
         elif event.type == pygame.KEYDOWN:
-            if allNotes.count(event.unicode.upper()) >= 1:
-                myKeyboard.highlightKey(event.unicode)
+            if allNotes.count(event.unicode.lower()) >= 1:
+                # myKeyboard.highlightKey(event.unicode)
+                print(CURRENT_ROOT_NOTE)
+                CURRENT_ROOT_NOTE = event.unicode
+                print(CURRENT_ROOT_NOTE)
             elif event.unicode == 'p':
-                myKeyboard.showKeysInfo()
+                myKeyboard.highlightScale()
     drawFrame()
         
 """
