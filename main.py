@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import messagebox
+import tkinter
 import pygame
 import json
 import time
@@ -123,7 +124,7 @@ def readInScales():
 
 def openSettings():
 
-    def addScale():
+    def addScale(*args):
         global scalesDict, scaleNames, scale
 
         name = newScaleName.get()
@@ -142,28 +143,47 @@ def openSettings():
                 scaleNames = [s for s in scalesDict]
                 scale = StringVar(tkWindow, scaleNames[0])
 
+                scaleOptions.update()
+
+
                 
             except:
                 print("That wasnt in the correct format deary")
 
-        print(name, scale)
 
-    def showHelp():
+    def showHelp(*args):
         messagebox.showinfo("Help", "To add a new scale, enter the name of the scale and the notes which make up the scale, with note #1 being the root note")
 
+    def showError(*args):
+        print("Not valid Scale")
+
+    def checkValid(*args):
+        if not newScaleNotes.get() == "":
+            try:
+                splitStringArray = [int(n) for n in newScaleNotes.get().split(',')]
+                if max(splitStringArray) >= 12 or min(splitStringArray) <= 0:
+                    # This is wrong -> ERROR
+                    showError()
+                else:
+                    # Correct -> Remove Error
+                    print("Thats good yeah")
+            except:
+                showError()
+
     tkWindow = Tk()
-    tkWindow.geometry('290x190+500+500')
+    tkWindow.geometry('290x210+500+500')
     tkWindow.title("Scaley")
 
     scalesDict = readInScales()
     scaleNames = [s for s in scalesDict]
     scale = StringVar(tkWindow, scaleNames[0])
 
+
     note = StringVar(tkWindow, allNotes[0])
 
     newScaleName = StringVar(tkWindow, "")
     newScaleNotes = StringVar(tkWindow, "")
-
+    newScaleNotes.trace('w', checkValid)
 
     Label(tkWindow, text="Choose Scale:").grid(row=0, column=0, padx=10, pady=10)
     Label(tkWindow, text="Root Note:").grid(row=1, column=0, padx=10)
@@ -187,6 +207,7 @@ def openSettings():
 
     Button(tkWindow, text="Add Scale", command=addScale).grid(row=6,column=0, pady=10)
     Button(tkWindow, text="Help", command=showHelp).grid(row=6,column=1)
+    Button(tkWindow, text="Done", command=tkWindow.destroy).grid(row=7,columnspan=2)
 
 
     mainloop()
@@ -238,6 +259,11 @@ myFont = pygame.font.SysFont('Bookman', 40)
 myKeyboard = Keyboard()
 mainMenu = Block(0, 500, RES[0], RES[1] - 500, colourScheme['mainMenu'])
 settingsButton = ButtonSetup()
+
+CURRENT_ROOT_NOTE = "C"
+CURRENT_SCALE = "Major"
+
+
 
 running = True
 while running:
