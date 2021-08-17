@@ -1,9 +1,8 @@
 from tkinter import *
 from tkinter import messagebox
-import tkinter
 import pygame
 import json
-import time
+from backendStructure import *
 
 pygame.init()
 
@@ -11,10 +10,6 @@ FPS = 30
 RES = (950, 700)
 clock = pygame.time.Clock()
 win = pygame.display.set_mode(RES)
-
-#PIANO ATTRIBUTES
-sharps = [2,4,7,9,11,14,16,19,21,23] # from C to C
-allNotes = ['c','c#','d','d#','e','f','f#','g','g#','a','a#','b']
 
 class Block():
     components = []
@@ -32,94 +27,11 @@ class Block():
         for com in cls.components:
             pygame.draw.rect(win, com.colour, (com.posX, com.posY, com.width, com.height))
             if len(com.mainText) > 0:
-                text = myFont.render(com.mainText, 1, colourScheme['buttonText'])
+                text = buttonFont.render(com.mainText, 1, colourScheme['buttonText'])
                 textPosX = int(RES[0] / 2 - text.get_width() / 2)
                 yOffset = 3
                 textPosY = int(com.posY + com.height/2 - text.get_height() / 2 + 3)
                 win.blit(text, (textPosX, textPosY))
-
-
-class Key():
-    def __init__(self, id, note, xPos, yPos, isSharp):
-        self.id = id
-        self.note = note
-        self.xPos = xPos
-        self.yPos = yPos
-        self.isSharp = isSharp
-        self.highlighted = False
-
-        
-class Keyboard():
-    def __init__(self):
-        self.xOffset = 100
-        self.yOffset = 100
-        self.keyWidth = 50
-        self.keyHeight = 300
-        self.allKeys = []
-        self.createKeyboard()
-    
-    def createKeyboard(self):
-        lastNoteSharp = False
-        whiteNoteOffset = 0
-        sharpNoteOffset = 1
-        for i in range(25):
-            isSharp = sharps.count(i+1) >= 1
-            yPos = self.yOffset
-            note = allNotes[i % 12]
-            if isSharp:
-                xPos = self.xOffset + ((i-sharpNoteOffset)*self.keyWidth) + 35
-                lastNoteSharp = True
-                sharpNoteOffset += 1
-            else:
-                whiteNoteOffset = whiteNoteOffset + 1 if lastNoteSharp else whiteNoteOffset
-                xPos = self.xOffset + (i-whiteNoteOffset)*self.keyWidth
-                
-                lastNoteSharp = False
-
-            newKey = Key(i+1, note, xPos, yPos, isSharp)
-            self.allKeys.append(newKey)
-    
-    def clearHighlights(self):
-        for key in self.allKeys:
-            key.highlighted = False
-
-    def highlightKey(self, note):
-        for key in self.allKeys:
-            if key.note.lower() == note:
-                key.highlighted = not key.highlighted
-    
-    def highlightScale(self):
-        self.clearHighlights()
-        rootPos = allNotes.index(CURRENT_ROOT_NOTE.lower())
-        currentScaleArray = allScales[CURRENT_SCALE]
-
-        for i in currentScaleArray:
-            notePos = (rootPos + i - 1) % 12
-            note = allNotes[notePos]
-            self.highlightKey(note)
-
-
-    def drawWhites(self):
-        for key in self.allKeys:
-            if not key.isSharp:
-                colour = colourScheme['active_key'] if key.highlighted else white 
-                pygame.draw.rect(win, colour, (key.xPos, key.yPos, self.keyWidth-2, self.keyHeight))
-                text = myFont.render(key.note, 1, black)
-                win.blit(text, (key.xPos+15, key.yPos - 30))
-
-
-    def drawSharps(self):
-        for key in self.allKeys:
-            if key.isSharp:
-                colour = colourScheme['active_key_sharp'] if key.highlighted else black 
-                pygame.draw.rect(win, colour, (key.xPos, key.yPos, int(self.keyWidth / 2 + 3), int(self.keyHeight/2 + 10)))
-                text = myFont.render(key.note, 1, black)
-                win.blit(text, (key.xPos, key.yPos - 50))
-
-    def showKeysInfo(self):
-        print("ID", "NOTE")
-        for key in self.allKeys:
-            print(key.id, key.note, key.xPos)
 
 
 def ButtonSetup():
@@ -137,10 +49,6 @@ def buttonPressed(mPos):
             return True
     else: 
         return False
-
-def readInScales():
-    with open('jsonScaleStorage.json', 'r') as sFile:
-        return json.load(sFile)
 
 def openSettings():
 
@@ -232,6 +140,7 @@ def openSettings():
 
     mainloop()
 
+
 def drawFrame():
     win.fill(colourScheme['background'])
 
@@ -242,47 +151,16 @@ def drawFrame():
 
     pygame.display.update()
 
-def cycleColour(section):
-    current = colourScheme[section]
-    newIndex = allColours.index(current)
-
-#COLOURS
-white = (255, 255, 255)
-black = (  0,   0,   0)
-dark_teal = (38, 70, 83)
-light_teal = (42, 157, 143)
-yellow = (233, 196, 106)
-orange = (244, 162, 97)
-red_orange = (231, 111, 81)
-
-allColours = [
-    white,
-    black,
-    dark_teal,
-    light_teal,
-    yellow,
-    orange,
-    red_orange
-]
-
-colourScheme = {
-    "mainMenu": yellow,
-    "background": red_orange,
-    "buttonText": white,
-    "button_bg": light_teal,
-    "active_key": light_teal,
-    "active_key_sharp": yellow
-}
-
 #FONT SETUP
-myFont = pygame.font.SysFont('Bookman', 40)
+buttonFont = pygame.font.SysFont('Aldhabi', 40)
+titleFont = pygame.font.SysFont('Aldhabi', 40)
+textFont = pygame.font.SysFont('Aldhabi', 40)
 
-myKeyboard = Keyboard()
+
+myKeyboard = Keyboard(win, buttonFont)
 mainMenu = Block(0, 500, RES[0], RES[1] - 500, colourScheme['mainMenu'])
 settingsButton = ButtonSetup()
 
-
-allScales = readInScales()
 CURRENT_ROOT_NOTE = "C"
 CURRENT_SCALE = "Major"
 
@@ -302,8 +180,9 @@ while running:
                 print(CURRENT_ROOT_NOTE)
                 CURRENT_ROOT_NOTE = event.unicode
                 print(CURRENT_ROOT_NOTE)
+                myKeyboard.highlightScale(CURRENT_ROOT_NOTE, CURRENT_SCALE)
             elif event.unicode == 'p':
-                myKeyboard.highlightScale()
+                myKeyboard.highlightScale(CURRENT_ROOT_NOTE, CURRENT_SCALE)
     drawFrame()
         
 """
