@@ -1,3 +1,4 @@
+from sys import winver
 import pygame
 import json
 
@@ -24,6 +25,7 @@ class Keyboard():
         self.allKeys = []
         self.win = win
         self.font = font
+        self.showScale = False
         self.createKeyboard()
     
     def createKeyboard(self):
@@ -72,7 +74,7 @@ class Keyboard():
     def drawWhites(self):
         for key in self.allKeys:
             if not key.isSharp:
-                colour = colourScheme['active_key'] if key.highlighted else white 
+                colour = colourScheme['active_key'] if key.highlighted and self.showScale else white 
                 pygame.draw.rect(self.win, colour, (key.xPos, key.yPos, self.keyWidth-2, self.keyHeight))
                 text = self.font.render(key.note, 1, black)
                 labelPosX = round(key.xPos + (self.keyWidth/2) - (text.get_width()/2))
@@ -83,15 +85,50 @@ class Keyboard():
     def drawSharps(self):
         for key in self.allKeys:
             if key.isSharp:
-                colour = colourScheme['active_key_sharp'] if key.highlighted else black 
+                colour = colourScheme['active_key_sharp'] if key.highlighted and self.showScale else black 
                 pygame.draw.rect(self.win, colour, (key.xPos, key.yPos, int(self.keyWidth / 2 + 3), int(self.keyHeight/2 + 10)))
                 text = self.font.render(key.note, 1, black)
                 self.win.blit(text, (key.xPos, key.yPos - 35))
 
-    def showKeysInfo(self):
-        print("ID", "NOTE")
-        for key in self.allKeys:
-            print(key.id, key.note, key.xPos)
+class Block():
+    components = []
+    def __init__(self, win, x, y, width, height, colour, font=None, text=""):
+        self.win = win
+        self.posX = x
+        self.posY = y
+        self.width = width
+        self.height = height
+        self.colour = colour
+        self.font = font
+        self.mainText = text
+        Block.components.append(self)
+
+    @classmethod
+    def drawMenu(cls):
+        for com in cls.components:
+            pygame.draw.rect(com.win, com.colour, (com.posX, com.posY, com.width, com.height))
+            if len(com.mainText) > 0:
+                text = com.font.render(com.mainText, 1, colourScheme['buttonText'])
+                textPosX = int(com.posX + com.width/2 - text.get_width() / 2)
+                yOffset = 3
+                textPosY = int(com.posY + com.height/2 - text.get_height() / 2 + 3)
+                com.win.blit(text, (textPosX, textPosY))
+
+class TextDisplay():
+    allTexts = []
+    def __init__(self, win, x, y, font, text):
+        self.win = win
+        self.xPos = x
+        self.yPos = y
+        self.font = font
+        self.text = text
+        TextDisplay.allTexts.append(self)
+
+    @classmethod
+    def drawAllText(cls):
+        for label in cls.allTexts:
+            text = label.font.render(label.text, 1, colourScheme['menuText'])
+            label.win.blit(text, (label.xPos, label.yPos))
 
 
 #PIANO ATTRIBUTES
@@ -110,7 +147,8 @@ red_orange = (231, 111, 81)
 colourScheme = {
     "mainMenu": light_teal,
     "background": red_orange,
-    "buttonText": white,
+    "buttonText": dark_teal,
+    "menuText": white,
     "button_bg": yellow,
     "active_key": light_teal,
     "active_key_sharp": yellow
