@@ -75,7 +75,9 @@ class Keyboard():
                 colour = colourScheme['active_key'] if key.highlighted else white 
                 pygame.draw.rect(self.win, colour, (key.xPos, key.yPos, self.keyWidth-2, self.keyHeight))
                 text = self.font.render(key.note, 1, black)
-                self.win.blit(text, (key.xPos+15, key.yPos - 30))
+                labelPosX = round(key.xPos + (self.keyWidth/2) - (text.get_width()/2))
+                labelPosY = key.yPos + self.keyHeight - 35
+                self.win.blit(text, (labelPosX, labelPosY))
 
 
     def drawSharps(self):
@@ -84,7 +86,7 @@ class Keyboard():
                 colour = colourScheme['active_key_sharp'] if key.highlighted else black 
                 pygame.draw.rect(self.win, colour, (key.xPos, key.yPos, int(self.keyWidth / 2 + 3), int(self.keyHeight/2 + 10)))
                 text = self.font.render(key.note, 1, black)
-                self.win.blit(text, (key.xPos, key.yPos - 50))
+                self.win.blit(text, (key.xPos, key.yPos - 35))
 
     def showKeysInfo(self):
         print("ID", "NOTE")
@@ -106,10 +108,10 @@ orange = (244, 162, 97)
 red_orange = (231, 111, 81)
 
 colourScheme = {
-    "mainMenu": yellow,
+    "mainMenu": light_teal,
     "background": red_orange,
     "buttonText": white,
-    "button_bg": light_teal,
+    "button_bg": yellow,
     "active_key": light_teal,
     "active_key_sharp": yellow
 }
