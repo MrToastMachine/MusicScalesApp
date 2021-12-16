@@ -1,4 +1,4 @@
-# MusicScalesApp
+# MusicScalesApp (WIP)
 ## Plan for App:
 Be able to choose a scale and root note which will be highlighted on the keyboard shown with keys numbered
 Menu button to open settings window with options to:  
