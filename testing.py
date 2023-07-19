@@ -1,6 +1,23 @@
-import json
+class Test():
+    allStuff = []
+    def __init__(self, x):
+        # print("init")
+        self.x = x
+        Test.allStuff.append(self)
+    
+    @classmethod
+    def allThings(cls):
+        for i in cls.allStuff:
+            print(i.x)
 
-with open('jsonScaleStorage.json', 'r') as file:
-    data = json.load(file)
-    names = [s for s in data]
-    print(names[0])
+
+class newTest(Test):
+    # pass
+    def __init__(self, x):
+        Test.__init__(self,x)
+        
+    def printVals(self):
+        print(self.x)
+
+t = newTest(5)
+t.printVals()
