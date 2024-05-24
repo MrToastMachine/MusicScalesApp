@@ -100,6 +100,8 @@ class Block():
         self.colour = colour
         self.font = font
         self.mainText = text
+
+        self.rect = pygame.rect(x, y, width, height)
         Block.components.append(self)
 
     @classmethod
