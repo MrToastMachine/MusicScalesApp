@@ -6,7 +6,7 @@ import tkSettingsWindow as settings
 pygame.init()
 
 FPS = 30
-RES = (950, 700)
+RES = (1000, 700)
 clock = pygame.time.Clock()
 win = pygame.display.set_mode(RES)
 

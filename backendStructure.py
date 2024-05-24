@@ -1,4 +1,3 @@
-from sys import winver
 import pygame
 import json
 
@@ -113,6 +112,25 @@ class Block():
                 yOffset = 3
                 textPosY = int(com.posY + com.height/2 - text.get_height() / 2 + 3)
                 com.win.blit(text, (textPosX, textPosY))
+
+class Button(Block):
+    allButtons = []
+    def __init__(self, win, x, y, width, height, colour, font=None, text="", action=None):
+        super().__init__(win, x, y, width, height, colour, font, text)
+        self.action = action  # This stores the function to be called when the button is clicked
+
+        Button.allButtons.append(self)
+
+    def click(self, event):
+        # Check if the click event is within the bounds of the button
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            # Get the mouse position
+            mouse_x, mouse_y = event.pos
+            # Check if the mouse is within the rectangle of the button
+            if (self.posX <= mouse_x <= self.posX + self.width) and (self.posY <= mouse_y <= self.posY + self.height):
+                # If the button was clicked and an action is set, call it
+                if self.action:
+                    self.action()
 
 class TextDisplay():
     allTexts = []
