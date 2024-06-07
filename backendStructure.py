@@ -1,10 +1,6 @@
 import pygame
 import json
 
-def readInScales():
-    with open('jsonScaleStorage.json', 'r') as sFile:
-        return json.load(sFile)
-
 class Key():
     def __init__(self, id, note, xPos, yPos, isSharp):
         self.id = id
@@ -34,7 +30,7 @@ class Keyboard():
         for i in range(25):
             isSharp = sharps.count(i+1) >= 1
             yPos = self.yOffset
-            note = allNotes[i % 12]
+            note = ALL_NOTES[i % 12]
             if isSharp:
                 xPos = self.xOffset + ((i-sharpNoteOffset)*self.keyWidth) + 35
                 lastNoteSharp = True
@@ -59,14 +55,14 @@ class Keyboard():
     
     def highlightScale(self, root, scale):
         self.clearHighlights()
-        rootPos = allNotes.index(root.lower())
+        rootPos = ALL_NOTES.index(root.lower())
         currentScaleArray = allScales[scale]
 
         print(root, scale)
 
         for i in currentScaleArray:
             notePos = (rootPos + i - 1) % 12
-            note = allNotes[notePos]
+            note = ALL_NOTES[notePos]
             self.highlightKey(note)
 
 
@@ -101,8 +97,12 @@ class Block():
         self.font = font
         self.mainText = text
 
-        self.rect = pygame.rect(x, y, width, height)
+        # self.rect = pygame.rect(x, y, width, height)
         Block.components.append(self)
+
+##########################
+## WHERE TO DRAW OBJECTS????????
+
 
     @classmethod
     def drawMenu(cls):
@@ -153,7 +153,7 @@ class TextDisplay():
 
 #PIANO ATTRIBUTES
 sharps = [2,4,7,9,11,14,16,19,21,23] # from C to C
-allNotes = ['c','c#','d','d#','e','f','f#','g','g#','a','a#','b']
+ALL_NOTES = ['c','c#','d','d#','e','f','f#','g','g#','a','a#','b']
 
 #COLOURS
 white = (255, 255, 255)

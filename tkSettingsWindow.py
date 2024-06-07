@@ -60,7 +60,7 @@ def openSettings():
     scale = StringVar(tkWindow, scaleNames[0])
 
 
-    note = StringVar(tkWindow, allNotes[0])
+    note = StringVar(tkWindow, ALL_NOTES[0])
 
     newScaleName = StringVar(tkWindow, "")
     newScaleNotes = StringVar(tkWindow, "")
@@ -77,7 +77,7 @@ def openSettings():
     scaleOptions = OptionMenu(tkWindow, scale, *scaleNames)
     scaleOptions.grid(row=0, column=1, padx=10)
 
-    noteOptions = OptionMenu(tkWindow, note, *allNotes)
+    noteOptions = OptionMenu(tkWindow, note, *ALL_NOTES)
     noteOptions.grid(row=1, column=1, padx=10)
 
     showLetter = IntVar() # IntVar is 0 or 1

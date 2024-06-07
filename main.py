@@ -65,7 +65,7 @@ while running:
             if buttonPressed(mousePos):
                 settings.openSettings()
         elif event.type == pygame.KEYDOWN:
-            if allNotes.count(event.unicode.lower()) >= 1:
+            if ALL_NOTES.count(event.unicode.lower()) >= 1:
                 print(CURRENT_ROOT_NOTE)
                 CURRENT_ROOT_NOTE = event.unicode
                 print(CURRENT_ROOT_NOTE)
