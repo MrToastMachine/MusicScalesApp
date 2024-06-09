@@ -1,4 +1,4 @@
-import sources as srcs
+import AppManager as srcs
 
 class Object01():
     def __init__(self):

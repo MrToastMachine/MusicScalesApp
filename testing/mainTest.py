@@ -1,5 +1,6 @@
 from Object01 import Object01
-import sources as srcs
+import AppManager as srcs
+from AppManager import ALL_NOTES
 
 sharps = [2,4,7,9,11,14,16,19,21,23] # from C to C
 ALL_NOTES = ['c','c#','d','d#','e','f','f#','g','g#','a','a#','b']

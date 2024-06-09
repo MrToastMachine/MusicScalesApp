@@ -1,30 +1,38 @@
 import pygame
 from colours import Colours
+from AppManager import ALL_NOTES
+import AppManager
 
 # SHARP_POSITIONS = [2,4,7,9,11,14,16,19,21,23] # from C to C
 SHARP_POSITIONS = [2,3,5,6,7,9,10,12,13,14]
-ALL_NOTES = ['c','c#','d','d#','e','f','f#','g','g#','a','a#','b']
+# ALL_NOTES = ['c','c#','d','d#','e','f','f#','g','g#','a','a#','b']
 
 x_padding = 100
 y_padding = 100
 
 num_keys = 24
 
+
 class Key():
     def __init__(self, id, note, isSharp):
         self.id = id
         self.note = note
         self.isSharp = isSharp
+        self.isHighlighted = False
     
     def createRect(self, xPos, yPos, keywidth, keyheight):
         self.rect = (xPos, yPos, keywidth-2, keyheight)
     
     def drawKey(self, win):
-        key_colour = Colours.BLACK if self.isSharp else Colours.WHITE
+        if self.isSharp:
+            key_colour = Colours.GREEN if self.isHighlighted else Colours.BLACK
+        else:
+            key_colour = Colours.BLUE if self.isHighlighted else Colours.WHITE
         pygame.draw.rect(win, key_colour, self.rect)
 
 class Keyboard():
-    def __init__(self, zone_width, zone_height, bg_colour):
+    def __init__(self, win, zone_width, zone_height, bg_colour):
+        self.win = win
         self.zone_width = zone_width
         self.zone_height = zone_height
         self.x_offset = x_padding
@@ -61,17 +69,24 @@ class Keyboard():
             key.createRect(xPos, yPos, black_keywidth, self.keyheight/2)
 
 
-    def drawKeyboard(self, win):
-        pygame.draw.rect(win,self.bg_colour, (0,0,self.zone_width, self.zone_height))
+    def drawKeyboard(self):
+        pygame.draw.rect(self.win,self.bg_colour, (0,0,self.zone_width, self.zone_height))
         for key in self.whites:
-            key.drawKey(win)
+            key.drawKey(self.win)
         for key in self.blacks:
-            key.drawKey(win)
+            key.drawKey(self.win)
         
         pygame.display.update()
     
-    def newScale(self, rootnote, scale):
-        pass
+    def updateKeyboard(self):
+        notes_in_scale = AppManager.getNotesInScale(AppManager.ACTIVE_ROOT, AppManager.ACTIVE_SCALE)
+        for key in self.all_keys:
+            if notes_in_scale.__contains__(key.note):
+                key.isHighlighted = True
+            else:
+                key.isHighlighted = False
+
+        self.drawKeyboard()
         # update which keys are highlighted
         # pull from scales storage
         # Call the draw keyboard function
