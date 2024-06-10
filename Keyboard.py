@@ -1,6 +1,7 @@
 import pygame
 from colours import Colours
 from AppManager import ALL_NOTES
+from AppManager import FONT
 import AppManager
 
 # SHARP_POSITIONS = [2,4,7,9,11,14,16,19,21,23] # from C to C
@@ -12,6 +13,7 @@ y_padding = 100
 
 num_keys = 24
 
+white_key_font = AppManager.getFont(30)
 
 class Key():
     def __init__(self, id, note, isSharp):
@@ -19,16 +21,30 @@ class Key():
         self.note = note
         self.isSharp = isSharp
         self.isHighlighted = False
+        self.num_in_scale = 0
     
     def createRect(self, xPos, yPos, keywidth, keyheight):
-        self.rect = (xPos, yPos, keywidth-2, keyheight)
+        self.rect = pygame.Rect(xPos, yPos, keywidth-2, keyheight)
     
     def drawKey(self, win):
         if self.isSharp:
             key_colour = Colours.GREEN if self.isHighlighted else Colours.BLACK
+            pygame.draw.rect(win, key_colour, self.rect)
         else:
             key_colour = Colours.BLUE if self.isHighlighted else Colours.WHITE
-        pygame.draw.rect(win, key_colour, self.rect)
+            pygame.draw.rect(win, key_colour, self.rect)
+            note_label = white_key_font.render(self.note, True, Colours.BLACK)
+            note_label_size = white_key_font.size(self.note)
+            note_label_pos = (self.rect.left + (self.rect.width - note_label_size[0])/2, self.rect.bottom - note_label_size[1]-20)
+            win.blit(note_label, note_label_pos)
+
+        if self.isHighlighted:
+            centre_pos = self.rect.center
+            pass
+            # Draw circle in centre of key with number in scale (self.num_in_scale)
+
+        
+            
 
 class Keyboard():
     def __init__(self, win, zone_width, zone_height, bg_colour):
@@ -71,6 +87,15 @@ class Keyboard():
 
     def drawKeyboard(self):
         pygame.draw.rect(self.win,self.bg_colour, (0,0,self.zone_width, self.zone_height))
+
+        # Title showing current root note and scale
+        active_setup_text = f"{AppManager.ACTIVE_ROOT} {AppManager.ACTIVE_SCALE}"
+        text = FONT.render(active_setup_text, True, Colours.WHITE)
+
+        font_size = FONT.size(active_setup_text)
+        title_pos = ((self.zone_width - font_size[0])/2, (y_padding - font_size[1])/2)
+        self.win.blit(text, title_pos)
+
         for key in self.whites:
             key.drawKey(self.win)
         for key in self.blacks:
@@ -79,17 +104,20 @@ class Keyboard():
         pygame.display.update()
     
     def updateKeyboard(self):
+        if AppManager.ACTIVE_ROOT == None or AppManager.ACTIVE_SCALE == None:
+            for key in self.all_keys:
+                key.isHighlighted = False
+            return
         notes_in_scale = AppManager.getNotesInScale(AppManager.ACTIVE_ROOT, AppManager.ACTIVE_SCALE)
         for key in self.all_keys:
             if notes_in_scale.__contains__(key.note):
                 key.isHighlighted = True
+                key.num_in_scale = notes_in_scale.index(key.note)+1
+                print(f"Note {key.note} :: {key.num_in_scale}")
             else:
                 key.isHighlighted = False
 
         self.drawKeyboard()
-        # update which keys are highlighted
-        # pull from scales storage
-        # Call the draw keyboard function
 
 
           
