@@ -8,11 +8,8 @@ import AppManager
 from AppManager import ALL_NOTES
 from AppManager import FONT
 
-import time
-
 pygame.init()
 AppManager.readInScales()
-
 
 FPS = 60
 RES = (1400, 700)
@@ -47,6 +44,8 @@ while(running):
             if (root_menu.checkAllButtonsForInput(mouse_pos)):
                 keyb.updateKeyboard()
             elif (scales_menu.checkAllButtonsForInput(mouse_pos)):
+                keyb.updateKeyboard()
+            elif (keyb.checkClearPressed(mouse_pos)):
                 keyb.updateKeyboard()
             
         elif event.type == pygame.KEYDOWN:

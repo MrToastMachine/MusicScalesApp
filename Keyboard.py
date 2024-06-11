@@ -97,15 +97,23 @@ class Keyboard():
             xPos = self.x_offset + self.keywidth*(SHARP_POSITIONS[i]-1) - black_keywidth/2
             key.createRect(xPos, yPos, black_keywidth, self.keyheight/2)
 
-        clear_button_rect = pygame.rect()
-        self.clear_button = Button()
+        clear_button_width = 90
+        clear_button_height = 40
+        clear_button_font = AppManager.getFont(30)
+        clear_button_pos = (self.rect.bottomright[0] - clear_button_width - 10, self.rect.bottomright[1] - clear_button_height - 10)
+        clear_button_rect = pygame.Rect(clear_button_pos[0], clear_button_pos[1], clear_button_width, clear_button_height)
+        self.clear_button = Button(clear_button_rect, "Clear", clear_button_font, Colours.RED, Colours.RED, Colours.WHITE, None)
+        
 
 
     def drawKeyboard(self):
         pygame.draw.rect(self.win,self.bg_colour, (0,0,self.zone_width, self.zone_height))
 
-        # Title showing current root note and scale
-        active_setup_text = f"{AppManager.ACTIVE_ROOT} {AppManager.ACTIVE_SCALE}"
+        if AppManager.ACTIVE_ROOT and AppManager.ACTIVE_SCALE:
+            # Title showing current root note and scale
+            active_setup_text = f"{AppManager.ACTIVE_ROOT} {AppManager.ACTIVE_SCALE}"
+        else:
+            active_setup_text = "No Scale Selected"
         text = FONT.render(active_setup_text, True, Colours.WHITE)
 
         font_size = FONT.size(active_setup_text)
@@ -118,6 +126,7 @@ class Keyboard():
             key.drawKey(self.win)
         
         # Draw Clear Button
+        self.clear_button.update(self.win)
 
         pygame.display.update()
     
@@ -125,18 +134,28 @@ class Keyboard():
         if AppManager.ACTIVE_ROOT == None or AppManager.ACTIVE_SCALE == None:
             for key in self.all_keys:
                 key.isHighlighted = False
+            
+            self.drawKeyboard()
             return
         notes_in_scale = AppManager.getNotesInScale(AppManager.ACTIVE_ROOT, AppManager.ACTIVE_SCALE)
         for key in self.all_keys:
             if notes_in_scale.__contains__(key.note):
                 key.isHighlighted = True
                 key.num_in_scale = notes_in_scale.index(key.note)+1
-                print(f"Note {key.note} :: {key.num_in_scale}")
+                # print(f"Note {key.note} :: {key.num_in_scale}")
             else:
                 key.isHighlighted = False
 
         self.drawKeyboard()
-
+    
+    def checkClearPressed(self, mouse_pos):
+        if self.clear_button.checkForInput(mouse_pos):
+            AppManager.ACTIVE_ROOT = None
+            AppManager.ACTIVE_SCALE = None
+            return True
+    
+        return False
+            
 
           
 

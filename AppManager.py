@@ -6,8 +6,8 @@ FONT = pygame.font.SysFont(None, 50)
 
 ALL_NOTES = ['c','c#','d','d#','e','f','f#','g','g#','a','a#','b']
 
-ACTIVE_ROOT = 'c'
-ACTIVE_SCALE = 'Major'
+ACTIVE_ROOT = None
+ACTIVE_SCALE = None
 
 scales = {}
 
