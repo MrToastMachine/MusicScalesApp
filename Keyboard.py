@@ -3,6 +3,7 @@ from colours import Colours
 from AppManager import ALL_NOTES
 from AppManager import FONT
 import AppManager
+from button import Button
 
 # SHARP_POSITIONS = [2,4,7,9,11,14,16,19,21,23] # from C to C
 SHARP_POSITIONS = [2,3,5,6,7,9,10,12,13,14]
@@ -13,7 +14,8 @@ y_padding = 100
 
 num_keys = 24
 
-white_key_font = AppManager.getFont(30)
+white_key_font = AppManager.getFont(40)
+note_number_font = AppManager.getFont(30)
 
 class Key():
     def __init__(self, id, note, isSharp):
@@ -39,8 +41,17 @@ class Key():
             win.blit(note_label, note_label_pos)
 
         if self.isHighlighted:
-            centre_pos = self.rect.center
-            pass
+            note_number_radius = 13
+
+            centre_pos = list(self.rect.center)
+            centre_pos[1] += self.rect.height/4
+            pygame.draw.circle(win, Colours.RED, centre_pos, note_number_radius)
+
+            note_num = str(self.num_in_scale)
+            note_number_text = note_number_font.render(note_num, True, Colours.WHITE)
+            note_number_text_size = note_number_font.size(note_num)
+            note_number_pos = (centre_pos[0] - note_number_text_size[0]/2, centre_pos[1] - note_number_text_size[1]/2)
+            win.blit(note_number_text, note_number_pos)
             # Draw circle in centre of key with number in scale (self.num_in_scale)
 
         
@@ -56,6 +67,8 @@ class Keyboard():
         self.keywidth = round((zone_width - 2*x_padding) / 14)
         self.keyheight = round(zone_height-2*y_padding)
         self.bg_colour = bg_colour
+
+        self.rect = pygame.Rect(0,0,self.zone_width, self.zone_height)
 
         self.all_keys = []
 
@@ -84,6 +97,9 @@ class Keyboard():
             xPos = self.x_offset + self.keywidth*(SHARP_POSITIONS[i]-1) - black_keywidth/2
             key.createRect(xPos, yPos, black_keywidth, self.keyheight/2)
 
+        clear_button_rect = pygame.rect()
+        self.clear_button = Button()
+
 
     def drawKeyboard(self):
         pygame.draw.rect(self.win,self.bg_colour, (0,0,self.zone_width, self.zone_height))
@@ -101,6 +117,8 @@ class Keyboard():
         for key in self.blacks:
             key.drawKey(self.win)
         
+        # Draw Clear Button
+
         pygame.display.update()
     
     def updateKeyboard(self):
