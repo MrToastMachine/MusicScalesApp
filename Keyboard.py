@@ -17,6 +17,8 @@ num_keys = 24
 white_key_font = AppManager.getFont(40)
 note_number_font = AppManager.getFont(30)
 
+sect_pad = AppManager.SECTION_PADDING
+
 class Key():
     def __init__(self, id, note, isSharp):
         self.id = id
@@ -30,10 +32,10 @@ class Key():
     
     def drawKey(self, win):
         if self.isSharp:
-            key_colour = Colours.GREEN if self.isHighlighted else Colours.BLACK
+            key_colour = Colours.BLACK_KEY_HIGHLIGHT if self.isHighlighted else Colours.BLACK
             pygame.draw.rect(win, key_colour, self.rect)
         else:
-            key_colour = Colours.BLUE if self.isHighlighted else Colours.WHITE
+            key_colour = Colours.WHITE_KEY_HIGHLIGHT if self.isHighlighted else Colours.WHITE
             pygame.draw.rect(win, key_colour, self.rect)
             note_label = white_key_font.render(self.note, True, Colours.BLACK)
             note_label_size = white_key_font.size(self.note)
@@ -45,7 +47,7 @@ class Key():
 
             centre_pos = list(self.rect.center)
             centre_pos[1] += self.rect.height/4
-            pygame.draw.circle(win, Colours.RED, centre_pos, note_number_radius)
+            pygame.draw.circle(win, Colours.NOTE_NUM_COLOR, centre_pos, note_number_radius)
 
             note_num = str(self.num_in_scale)
             note_number_text = note_number_font.render(note_num, True, Colours.WHITE)
@@ -68,8 +70,6 @@ class Keyboard():
         self.keyheight = round(zone_height-2*y_padding)
         self.bg_colour = bg_colour
 
-        self.rect = pygame.Rect(0,0,self.zone_width, self.zone_height)
-
         self.all_keys = []
 
         self.createKeyboard()
@@ -77,6 +77,8 @@ class Keyboard():
 
     
     def createKeyboard(self):
+        self.rect = pygame.Rect(sect_pad/2, sect_pad/2,self.zone_width - sect_pad, self.zone_height - sect_pad)
+
         for i in range(num_keys):
             current_note = ALL_NOTES[i % len(ALL_NOTES)]
             isSharp = current_note.__contains__('#')
@@ -102,12 +104,12 @@ class Keyboard():
         clear_button_font = AppManager.getFont(30)
         clear_button_pos = (self.rect.bottomright[0] - clear_button_width - 10, self.rect.bottomright[1] - clear_button_height - 10)
         clear_button_rect = pygame.Rect(clear_button_pos[0], clear_button_pos[1], clear_button_width, clear_button_height)
-        self.clear_button = Button(clear_button_rect, "Clear", clear_button_font, Colours.RED, Colours.RED, Colours.WHITE, None)
+        self.clear_button = Button(clear_button_rect, "Clear", clear_button_font, Colours.WHITE, Colours.BLACK, None)
         
 
 
     def drawKeyboard(self):
-        pygame.draw.rect(self.win,self.bg_colour, (0,0,self.zone_width, self.zone_height))
+        pygame.draw.rect(self.win,self.bg_colour, self.rect, border_radius=AppManager.SECTION_CORNER_RADIUS, )
 
         if AppManager.ACTIVE_ROOT and AppManager.ACTIVE_SCALE:
             # Title showing current root note and scale
@@ -150,11 +152,15 @@ class Keyboard():
     
     def checkClearPressed(self, mouse_pos):
         if self.clear_button.checkForInput(mouse_pos):
-            AppManager.ACTIVE_ROOT = None
-            AppManager.ACTIVE_SCALE = None
+            self.clearKeyboard()
             return True
     
         return False
+    
+    def clearKeyboard(self):
+        AppManager.ACTIVE_ROOT = None
+        AppManager.ACTIVE_SCALE = None
+        self.updateKeyboard()
             
 
           

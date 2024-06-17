@@ -8,8 +8,10 @@ from colours import Colours
 x_padding = 50
 y_padding = 50
 
+sect_pad = AppManager.SECTION_PADDING
+
 class ScalesMenu():
-    def __init__(self, pos, dimensions, button_height):
+    def __init__(self, pos, dimensions, button_height, bg_color, butt_color):
         self.xPos, self.yPos = pos
         self.width, self.height = dimensions
         self.button_height = button_height
@@ -24,23 +26,27 @@ class ScalesMenu():
         self.x_padding = x_padding
         self.y_padding = y_padding
 
+        self.bg_color = bg_color
+        self.butt_color = butt_color
+
         self.createMenu()
 
     # Designate positions of all buttons
     # Called once at instantiation
     def createMenu(self):
+        self.rect = (self.xPos + sect_pad/2, self.yPos + sect_pad/2, self.width - sect_pad, self.height - sect_pad)
         for i, note in enumerate(AppManager.scales):
             xStart = self.xPos + self.x_padding
             yStart = self.y_padding + self.yPos + i*(self.button_height + self.button_gap)
 
             rect = pygame.Rect(xStart, yStart, self.button_width, self.button_height)
 
-            button = Button(rect, note, FONT, Colours.BLUE, Colours.GREEN, Colours.WHITE, None)
+            button = Button(rect, note, FONT, self.butt_color, Colours.BLACK, None)
 
             self.all_buttons.append(button)
 
     def drawMenu(self, screen):
-        pygame.draw.rect(screen, Colours.WHITE, (self.xPos, self.yPos, self.width, self.height))
+        pygame.draw.rect(screen, self.bg_color, self.rect, border_radius=AppManager.SECTION_CORNER_RADIUS)
         for butt in self.all_buttons:
             butt.update(screen)
 

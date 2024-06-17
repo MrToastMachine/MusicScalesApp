@@ -17,16 +17,18 @@ RES = (1400, 700)
 win = pygame.display.set_mode(RES)
 clock = pygame.time.Clock()
 
-keyb = Keyboard(win, 1000, 600, Colours.GRAY)
-keyb.drawKeyboard()
 
+win.fill(Colours.BACKGROUND_COLOR)
+
+keyb = Keyboard(win, 1000, 600, Colours.KEYB_BG_COLOR)
+keyb.drawKeyboard()
 
 button_size = 50
 
-root_menu = RootNoteMenu((0,600),(1000, 100),button_size)
+root_menu = RootNoteMenu((0,600),(1000, 100),button_size, Colours.RNM_BG_COLOR, Colours.BUTTON_COLOR)
 root_menu.drawMenu(win)
 
-scales_menu = ScalesMenu((1000,0), (400,700), 40)
+scales_menu = ScalesMenu((1000,0), (400,700), 40, Colours.SCALES_BG_COLOR, Colours.BUTTON_COLOR)
 scales_menu.drawMenu(win)
 pygame.display.update()
 
@@ -52,6 +54,7 @@ while(running):
             if event.key == pygame.K_SPACE:
                 # keyb.newScale('c', srcs.scales['Blues'])
                 print("[[[ SPACEBAR ]]]")
+                keyb.clearKeyboard()
 
         pygame.display.update()
     # drawFrame()

@@ -9,6 +9,9 @@ ALL_NOTES = ['c','c#','d','d#','e','f','f#','g','g#','a','a#','b']
 ACTIVE_ROOT = None
 ACTIVE_SCALE = None
 
+SECTION_CORNER_RADIUS = 10
+SECTION_PADDING = 10
+
 scales = {}
 
 def getFont(size): # Returns Press-Start-2P in the desired size
