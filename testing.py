@@ -1,85 +1,102 @@
-import pygame
-import sys
+import pygame, sys
+from button import Button
 
-# Initialize Pygame
 pygame.init()
 
-# Screen dimensions
-WIDTH, HEIGHT = 1500, 300
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-GRAY = (200, 200, 200)
+RES = (1000,800)
+SCREEN = pygame.display.set_mode(RES)
+pygame.display.set_caption("New Scales App")
 
-all_notes = ['a','a#','b','c','c#','d','d#','e','f','f#','g','g#']
+def get_font(size): # Returns Press-Start-2P in the desired size
+    return pygame.font.Font("assets/font.ttf", size)
 
-# Fonts
-FONT = pygame.font.SysFont(None, 50)
+def play():
+    while True:
+        PLAY_MOUSE_POS = pygame.mouse.get_pos()
 
-# Dropdown options
-scales = {
-    "Major": [1, 3, 5, 6, 8, 10, 12],
-    "Minor": [1, 3, 4, 6, 8, 9, 11],
-    "Pentatonic Major": [1, 3, 5, 8, 10],
-    "Pentatonic Minor": [1, 4, 6, 8, 11],
-    "Blues": [1, 4, 6, 7, 8, 11],
-    "Harmonic Minor": [1, 3, 4, 6, 8, 9, 12],
-    "Melodic Minor": [1, 3, 4, 6, 8, 10, 12],
-    "Dorian": [1, 3, 4, 6, 8, 10, 11],
-    "Mixolydian": [1, 3, 5, 6, 8, 10, 11]
-}
+        SCREEN.fill("black")
 
-# Screen setup
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Dropdown Menu Example")
+        PLAY_TEXT = get_font(45).render("This is the PLAY screen.", True, "White")
+        PLAY_RECT = PLAY_TEXT.get_rect(center=(640, 260))
+        SCREEN.blit(PLAY_TEXT, PLAY_RECT)
 
-# Dropdown variables
-dropdown_open = False
-selected_scale = None
-options_rect = pygame.Rect(100, 50, 200, 30)
-option_height = 30
+        PLAY_BACK = Button(image=None, pos=(640, 460), 
+                            text_input="BACK", font=get_font(75), base_color="White", hovering_color="Green")
 
-button_size = 50
-x_padding = 50
-button_area_width = WIDTH - 2*x_padding
-gap = (button_area_width - 12*button_size)/(11)
+        PLAY_BACK.changeColor(PLAY_MOUSE_POS)
+        PLAY_BACK.update(SCREEN)
 
-def drawFrame():
-    screen.fill(BLACK)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if PLAY_BACK.checkForInput(PLAY_MOUSE_POS):
+                    main_menu()
 
-    y_height = HEIGHT/2 - button_size/2
-    for i, note in enumerate(all_notes):
-        xStart = x_padding + i*(button_size+gap)
-
-        rect = pygame.Rect(xStart, y_height, button_size, button_size)
-        pygame.draw.rect(screen, GRAY, rect)
-
-        note_text = FONT.render(note,1,BLACK)
-        screen.blit(note_text, (xStart + button_size/8, y_height + button_size/8))
+        pygame.display.update()
     
-    pygame.display.update()
+def options():
+    while True:
+        OPTIONS_MOUSE_POS = pygame.mouse.get_pos()
 
-drawFrame()
+        SCREEN.fill("white")
 
-# Main loop
-running = True
-while running:
-    
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            if options_rect.collidepoint(event.pos):
-                dropdown_open = not dropdown_open
-            elif dropdown_open:
-                for i, scale in enumerate(scales.keys()):
-                    option_rect = pygame.Rect(100, 50 + (i + 1) * option_height, 200, option_height)
-                    if option_rect.collidepoint(event.pos):
-                        selected_scale = scale
-                        dropdown_open = False
-                        break
-            else:
-                dropdown_open = False
+        OPTIONS_TEXT = get_font(45).render("This is the OPTIONS screen.", True, "Black")
+        OPTIONS_RECT = OPTIONS_TEXT.get_rect(center=(640, 260))
+        SCREEN.blit(OPTIONS_TEXT, OPTIONS_RECT)
 
+        OPTIONS_BACK = Button(image=None, pos=(640, 460), 
+                            text_input="BACK", font=get_font(75), base_color="Black", hovering_color="Green")
 
-pygame.quit()
-sys.exit()
+        OPTIONS_BACK.changeColor(OPTIONS_MOUSE_POS)
+        OPTIONS_BACK.update(SCREEN)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if OPTIONS_BACK.checkForInput(OPTIONS_MOUSE_POS):
+                    main_menu()
+
+        pygame.display.update()
+
+def main_menu():
+    while True:
+        SCREEN.blit(BG, (0, 0))
+
+        MENU_MOUSE_POS = pygame.mouse.get_pos()
+
+        MENU_TEXT = get_font(100).render("MAIN MENU", True, "#b68f40")
+        MENU_RECT = MENU_TEXT.get_rect(center=(640, 100))
+
+        PLAY_BUTTON = Button(image=pygame.image.load("assets/Play Rect.png"), pos=(640, 250), 
+                            text_input="PLAY", font=get_font(75), base_color="#11ff22", hovering_color="White")
+        OPTIONS_BUTTON = Button(image=pygame.image.load("assets/Options Rect.png"), pos=(640, 400), 
+                            text_input="OPTIONS", font=get_font(75), base_color="#11ff22", hovering_color="White")
+        QUIT_BUTTON = Button(image=pygame.image.load("assets/Quit Rect.png"), pos=(640, 550), 
+                            text_input="QUIT", font=get_font(75), base_color="#11ff22", hovering_color="White")
+
+        SCREEN.blit(MENU_TEXT, MENU_RECT)
+
+        for button in [PLAY_BUTTON, OPTIONS_BUTTON, QUIT_BUTTON]:
+            button.changeColor(MENU_MOUSE_POS)
+            button.update(SCREEN)
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    play()
+                if OPTIONS_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    options()
+                if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    pygame.quit()
+                    sys.exit()
+
+        pygame.display.update()
+
+main_menu()

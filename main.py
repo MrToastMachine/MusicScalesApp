@@ -1,89 +1,60 @@
 import pygame
-import json
-from backendStructure import *
-import tkSettingsWindow as settings
+from Keyboard import Keyboard
+from RootNoteMenu import RootNoteMenu
+from ScalesMenu import ScalesMenu
+from colours import Colours
+from button import Button
+import AppManager
+from AppManager import ALL_NOTES
+from AppManager import FONT
 
 pygame.init()
+AppManager.readInScales()
 
-FPS = 30
-RES = (1000, 700)
-clock = pygame.time.Clock()
+FPS = 60
+RES = (1400, 700)
+# RES = (1400, 700)
 win = pygame.display.set_mode(RES)
+clock = pygame.time.Clock()
 
 
-def ButtonSetup(xPos, yPos, text):
-    width = 300
-    height = 50
+win.fill(Colours.BACKGROUND_COLOR)
 
-    return Block(win, xPos, yPos, width, height, colourScheme['button_bg'], buttonFont, text=text)
+keyb = Keyboard(win, 1000, 600, Colours.KEYB_BG_COLOR)
+keyb.drawKeyboard()
 
-def buttonPressed(mPos):
-    x, y = mPos
-    if x > settingsButton.posX and x < settingsButton.posX + settingsButton.width:
-        if y > settingsButton.posY and y < settingsButton.posY + settingsButton.height:
-            return True
-    else: 
-        return False
+button_size = 50
 
-def drawFrame():
-    win.fill(colourScheme['background'])
+root_menu = RootNoteMenu((0,600),(1000, 100),button_size, Colours.RNM_BG_COLOR, Colours.BUTTON_COLOR)
+root_menu.drawMenu(win)
 
-    myKeyboard.drawWhites()
-    myKeyboard.drawSharps()
-    
-    Block.drawMenu()
-    TextDisplay.drawAllText()
-
-    pygame.display.update()
-
-#FONT SETUP
-buttonFont = pygame.font.SysFont('Aldhabi', 40)
-titleFont = pygame.font.SysFont('Aldhabi', 40)
-textFont = pygame.font.SysFont('Aldhabi', 40)
-
-scaleHeading = TextDisplay(win, 130, 530, titleFont, "Current Scale")
-rootNoteHeading = TextDisplay (win, 600, 530, titleFont, "Current Root Note")
-
-myKeyboard = Keyboard(win, buttonFont)
-mainMenu = Block(win, 0, 500, RES[0], RES[1] - 500, colourScheme['mainMenu'])
-settingsButton = ButtonSetup(80, 620, "Settings")
-controlsButton = ButtonSetup(570, 620, "Controls")
-
-
-CURRENT_ROOT_NOTE = "C"
-CURRENT_SCALE = "Major"
-
+scales_menu = ScalesMenu((1000,0), (400,700), 40, Colours.SCALES_BG_COLOR, Colours.BUTTON_COLOR)
+scales_menu.drawMenu(win)
+pygame.display.update()
 
 running = True
-while running:
+while(running):
     clock.tick(FPS)
+    mouse_pos = pygame.mouse.get_pos()
+
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            mousePos = pygame.mouse.get_pos()
-            if buttonPressed(mousePos):
-                settings.openSettings()
+            mouse_pos = pygame.mouse.get_pos()
+            if (root_menu.checkAllButtonsForInput(mouse_pos)):
+                keyb.updateKeyboard()
+            elif (scales_menu.checkAllButtonsForInput(mouse_pos)):
+                keyb.updateKeyboard()
+            elif (keyb.checkClearPressed(mouse_pos)):
+                keyb.updateKeyboard()
+            
         elif event.type == pygame.KEYDOWN:
-            if allNotes.count(event.unicode.lower()) >= 1:
-                print(CURRENT_ROOT_NOTE)
-                CURRENT_ROOT_NOTE = event.unicode
-                print(CURRENT_ROOT_NOTE)
-                myKeyboard.highlightScale(CURRENT_ROOT_NOTE, CURRENT_SCALE)
-            elif event.unicode == 'p':
-                myKeyboard.highlightScale(CURRENT_ROOT_NOTE, CURRENT_SCALE)
-            elif event.key == pygame.K_SPACE:
-                myKeyboard.showScale = not myKeyboard.showScale                
-    drawFrame()
-        
-"""
-Thoughts:
-- Be able to choose major or minor scale
-- Choose root note and all others in scale get highlighted
-- Number all notes in key
-- Create new scale feature (Enter numbers for each note in scale)
+            if event.key == pygame.K_SPACE:
+                # keyb.newScale('c', srcs.scales['Blues'])
+                print("[[[ SPACEBAR ]]]")
+                keyb.clearKeyboard()
 
-- Later... Add in chord mode to display chords
-    + 1st, 3rd and 5th etc...
-- Much much later >> Show notes on guitar frets
-"""
+        pygame.display.update()
+    # drawFrame()
