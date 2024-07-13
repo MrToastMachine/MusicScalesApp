@@ -12,6 +12,10 @@ ACTIVE_SCALE = None
 SECTION_CORNER_RADIUS = 10
 SECTION_PADDING = 10
 
+# Guitar Specific Parameters
+GUITAR_TUNING = ['e','a','d','g','b','e']
+NOTE_CIRCLE_RADIUS = 15
+
 scales = {}
 
 def getFont(size): # Returns Press-Start-2P in the desired size

@@ -8,6 +8,9 @@ class Colours():
     GREEN = (0,255,0)
     BLUE = (0,0,255)
     GRAY = (100,100,100)
+    BROWN = (50,50,0)
+
+    ANGELS_YELLOW = (248,184,0)
     FOREST_GREEN = hexToRGB("002500")
     MOSS_GREEN = hexToRGB("929982")
     IMPERIAL_RED = hexToRGB("FB3640")
@@ -24,3 +27,4 @@ class Colours():
     NOTE_NUM_COLOR = FOREST_GREEN
 
     BACKGROUND_COLOR = FOREST_GREEN
+    

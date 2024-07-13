@@ -37,6 +37,7 @@ class Key():
         else:
             key_colour = Colours.WHITE_KEY_HIGHLIGHT if self.isHighlighted else Colours.WHITE
             pygame.draw.rect(win, key_colour, self.rect)
+            
             note_label = white_key_font.render(self.note, True, Colours.BLACK)
             note_label_size = white_key_font.size(self.note)
             note_label_pos = (self.rect.left + (self.rect.width - note_label_size[0])/2, self.rect.bottom - note_label_size[1]-20)
@@ -77,6 +78,7 @@ class Keyboard():
 
     
     def createKeyboard(self):
+        # rect for keyboard itself in total (NOT WHOLE AREA OF SECTION)
         self.rect = pygame.Rect(sect_pad/2, sect_pad/2,self.zone_width - sect_pad, self.zone_height - sect_pad)
 
         for i in range(num_keys):
