@@ -4,16 +4,16 @@ import AppManager
 class Button():
 	all_buttons = []
 
-	def __init__(self, rect, text_input, font, base_color, text_color, command):
+	def __init__(self, rect, text_input, font, base_colour, text_colour, command):
 		self.rect = rect
 		# self.x_pos = pos[0]
 		# self.y_pos = pos[1]
 		# self.width, self.height = size
 		self.font = font
-		self.base_color = base_color
+		self.base_colour = base_colour
 		self.text_input = text_input
-		self.text_color = text_color
-		self.text = self.font.render(self.text_input, True, self.text_color)
+		self.text_colour = text_colour
+		self.text = self.font.render(self.text_input, True, self.text_colour)
 		self.image = self.text
 		# self.rect = pygame.Rect(self.x_pos, self.y_pos, self.width, self.height)
 		# self.text_rect = self.text.get_rect(center=(self.x_pos, self.y_pos))
@@ -23,7 +23,7 @@ class Button():
 		Button.all_buttons.append(self)
 
 	def update(self, screen):
-		pygame.draw.rect(screen, self.base_color, self.rect)
+		pygame.draw.rect(screen, self.base_colour, self.rect)
 
 		# Get size of text in order to center it correctly in button
 		text_size = self.font.size(self.text_input)
@@ -36,12 +36,3 @@ class Button():
 		if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom):
 			return True
 		return False
-
-	# def changeColor(self, position):
-	# 	if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom):
-	# 		self.text = self.font.render(self.text_input, True, self.hovering_color)
-	# 	else:
-	# 		self.text = self.font.render(self.text_input, True, self.base_color)
-
-	
-				

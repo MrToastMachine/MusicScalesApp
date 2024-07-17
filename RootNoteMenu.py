@@ -10,7 +10,7 @@ x_padding = 50
 sect_pad = AppManager.SECTION_PADDING
 
 class RootNoteMenu():
-    def __init__(self, pos, dimensions, button_size, bg_col, butt_color):
+    def __init__(self, pos, dimensions, button_size, bg_col, butt_colour, butt_colour_highlighted):
         self.xPos, self.yPos = pos
         self.width, self.height = dimensions
         self.button_size = button_size
@@ -22,8 +22,9 @@ class RootNoteMenu():
         self.x_padding = x_padding
         self.y_padding = (self.height - self.button_size) / 2 
 
-        self.bg_color = bg_col
-        self.butt_color = butt_color
+        self.bg_colour = bg_col
+        self.butt_colour = butt_colour
+        self.butt_colour_highlighted = butt_colour_highlighted
 
         self.createMenu()
 
@@ -37,13 +38,18 @@ class RootNoteMenu():
 
             rect = pygame.Rect(xStart, yStart, self.button_size, self.button_size)
 
-            button = Button(rect,note, FONT, self.butt_color, Colours.BLACK, None)
+            button = Button(rect,note, FONT, self.butt_colour, Colours.BLACK, None)
 
             self.all_buttons.append(button)
 
     def drawMenu(self, screen):
-        pygame.draw.rect(screen, self.bg_color, self.rect, border_radius=AppManager.SECTION_CORNER_RADIUS)
+        pygame.draw.rect(screen, self.bg_colour, self.rect, border_radius=AppManager.SECTION_CORNER_RADIUS)
         for butt in self.all_buttons:
+            if butt.text_input == AppManager.ACTIVE_ROOT:
+                butt.base_colour = self.butt_colour_highlighted
+            else:
+                butt.base_colour = self.butt_colour
+                
             butt.update(screen)
 
     def checkAllButtonsForInput(self, mousePos):

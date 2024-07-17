@@ -16,6 +16,8 @@ SECTION_PADDING = 10
 GUITAR_TUNING = ['e','a','d','g','b','e']
 NOTE_CIRCLE_RADIUS = 15
 
+SHOW_SCALE_NUMBERS = False
+
 scales = {}
 
 def getFont(size): # Returns Press-Start-2P in the desired size
@@ -36,3 +38,8 @@ def getNotesInScale(root, scale):
         notes_in_scale.append(ALL_NOTES[note_index])
     
     return(notes_in_scale)
+
+def toggleScaleNumbers():
+    global SHOW_SCALE_NUMBERS
+    
+    SHOW_SCALE_NUMBERS = not SHOW_SCALE_NUMBERS
