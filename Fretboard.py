@@ -13,6 +13,11 @@ DOUBLE_DOT_POSITIONS = [12]
 
 NOTE_FONT = AppManager.getFont(30)
 
+NUM_STRINGS = len(AppManager.GUITAR_TUNING)
+
+TUNING_BOX_COLOR = Colours.WHITE
+TUNING_LETTER_COLOR = Colours.BLACK
+
 
 def drawCircle(surface, color, border_color, pos, radius):
     x, y = pos
@@ -33,6 +38,48 @@ def getNoteNumber(note):
     num_in_scale = notes_in_scale.index(note)+1
 
     return num_in_scale
+
+class LetterBox():
+    def __init__(self, pos, size, letter, box_color, text_color):
+        self.rect = pygame.Rect(pos[0], pos[1], size, size)
+
+        self.letter = letter
+
+        self.box_color = box_color
+        self.text_color = text_color
+        self.font = AppManager.getFont(size - 10)
+    
+    def Draw(self, win):
+        note_label = self.font.render(self.letter, True, self.text_color)
+        note_label_size = self.font.size(self.letter)
+        note_label_pos = (self.rect.centerx - note_label_size[0]/2 , self.rect.centery - note_label_size[1]/2 )
+
+        pygame.draw.rect(win, self.box_color, self.rect)
+        win.blit(note_label, note_label_pos)
+
+class TuningSection():
+    def __init__(self, pos, size, min_gap):
+        self.rect = pygame.Rect(pos[0], pos[1], size[0], size[1])
+
+        max_box_width = self.rect.width + min_gap * (NUM_STRINGS - 1) 
+        self.box_size = min(self.rect.height, max_box_width)
+
+        self.all_text_boxes = []
+        self.CreateSection()
+
+    def CreateSection(self):
+        self.gap = (self.rect.width - NUM_STRINGS * self.box_size) / (NUM_STRINGS - 1)
+
+        for i, str_tuning in enumerate(AppManager.GUITAR_TUNING):
+            xPos = self.rect.left + i * (self.box_size + self.gap)
+            yPos = self.rect.centery - (self.box_size / 2)
+            lb = LetterBox((xPos, yPos), self.box_size, str_tuning.capitalize(), TUNING_BOX_COLOR, TUNING_LETTER_COLOR)
+            self.all_text_boxes.append(lb)
+
+    def DrawSection(self, win):
+        for lb in self.all_text_boxes:
+            lb.Draw(win)
+
 
 
 class GuitarString():
@@ -90,7 +137,7 @@ class GuitarString():
 
 
 class Fretboard():
-    def __init__(self, win, zone_width, zone_height, neck_len, neck_width, bg_color, neck_colour):
+    def __init__(self, win, zone_pos, zone_width, zone_height, neck_len, neck_width, bg_color, neck_colour):
         self.win = win
         self.zone_height = zone_height
         self.zone_width = zone_width
@@ -98,6 +145,7 @@ class Fretboard():
         self.neck_width = neck_width
         self.bg_color = bg_color
         self.neck_colour = neck_colour        
+        self.rect = pygame.Rect(zone_pos[0], zone_pos[1], zone_width, zone_height)
 
         self.x_padding = (zone_width - neck_len)/2
         self.y_padding = (zone_height - neck_width)/2
@@ -118,6 +166,16 @@ class Fretboard():
 
         for i, open_note in enumerate(AppManager.GUITAR_TUNING):
             self.all_strings.append(GuitarString(6 - i, open_note))
+        
+        tuning_sect_width = 800
+        tuning_sect_height = 50
+        tuning_sect_size = [tuning_sect_width, tuning_sect_height]
+        tuning_sect_min_gap = 50
+        tuning_sect_xPos = self.rect.centerx - tuning_sect_width/2 
+        tuning_sect_yPos = self.rect.bottom - self.rect.height/16 * 3
+        tuning_sect_pos = [tuning_sect_xPos, tuning_sect_yPos]
+    
+        self.tuning_settings = TuningSection(tuning_sect_pos,tuning_sect_size, tuning_sect_min_gap)
 
 
     def drawFretboard(self):
@@ -147,17 +205,20 @@ class Fretboard():
             pygame.draw.line(self.win, Colours.GRAY, (fret_xPos, self.y_padding), (fret_xPos, self.y_padding + self.neck_width), 3)
 
             dist_above_neck = 10
+            dot_y_pos = self.zone_height - self.y_padding + dist_above_neck
             if DOT_POSITIONS.__contains__(i+1):
-                dot_pos = (fret_xPos + self.fret_spacing/2, self.y_padding - dist_above_neck)
+                dot_pos = (fret_xPos + self.fret_spacing/2, dot_y_pos)
                 pygame.draw.circle(self.win, Colours.BLACK, dot_pos, 3)
 
             elif DOUBLE_DOT_POSITIONS.__contains__(i+1):
-                dot_1_pos = dot_pos = (fret_xPos + self.fret_spacing/3, self.y_padding - dist_above_neck)
-                dot_2_pos = dot_pos = (fret_xPos + self.fret_spacing*2/3, self.y_padding - dist_above_neck)
+                dot_1_pos = dot_pos = (fret_xPos + self.fret_spacing/3, dot_y_pos)
+                dot_2_pos = dot_pos = (fret_xPos + self.fret_spacing*2/3, dot_y_pos)
                 pygame.draw.circle(self.win, Colours.BLACK, dot_1_pos, 3)
                 pygame.draw.circle(self.win, Colours.BLACK, dot_2_pos, 3)
 
         # Strings
         for string in self.all_strings:
             string.drawStringNotes(self)
+        
+        self.tuning_settings.DrawSection(self.win)
 

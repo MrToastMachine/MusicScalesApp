@@ -21,7 +21,7 @@ clock = pygame.time.Clock()
 win.fill(Colours.BACKGROUND_COLOR)
 
 
-fretboard = Fretboard(win, 1400, 600, 1200, 200, Colours.KEYB_BG_COLOR, Colours.BROWN)
+fretboard = Fretboard(win, (0,0), 1400, 600, 1200, 200, Colours.KEYB_BG_COLOR, Colours.BROWN)
 fretboard.drawFretboard()
 
 ROOT_NOTE_BUTTON_SIZE = 50
