@@ -58,6 +58,10 @@ while(running):
             elif (scales_menu.checkAllButtonsForInput(mouse_pos)):
                 fretboard.drawFretboard()
                 print(f"[SCALE UPDATE]  -->  [{AppManager.ACTIVE_SCALE}]")
+            elif (fretboard.checkMouseInput(mouse_pos)):
+                fretboard.drawFretboard()
+                print("Something on fretboard section clicked")
+                
 
 
 

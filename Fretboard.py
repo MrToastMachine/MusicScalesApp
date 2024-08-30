@@ -3,7 +3,7 @@ import time
 from colours import Colours
 from AppManager import ALL_NOTES
 from AppManager import FONT
-import AppManager
+import AppManager as AM
 from button import Button
 
 from pygame import gfxdraw
@@ -11,9 +11,9 @@ from pygame import gfxdraw
 DOT_POSITIONS = [3,5,7,9]
 DOUBLE_DOT_POSITIONS = [12]
 
-NOTE_FONT = AppManager.getFont(30)
+NOTE_FONT = AM.getFont(30)
 
-NUM_STRINGS = len(AppManager.GUITAR_TUNING)
+NUM_STRINGS = len(AM.GUITAR_TUNING)
 
 TUNING_BOX_COLOR = Colours.WHITE
 TUNING_LETTER_COLOR = Colours.BLACK
@@ -29,33 +29,57 @@ def getStringArray(open_note):
     return ALL_NOTES[open_note_index:] + ALL_NOTES[:open_note_index+1]
     
 def getNoteNumber(note):
-    if AppManager.ACTIVE_ROOT == None or AppManager.ACTIVE_SCALE == None:
+    if AM.ACTIVE_ROOT == None or AM.ACTIVE_SCALE == None:
         print("No scale and root note selected")
         return False
     
-    notes_in_scale = AppManager.getNotesInScale(AppManager.ACTIVE_ROOT, AppManager.ACTIVE_SCALE)
+    notes_in_scale = AM.getNotesInScale(AM.ACTIVE_ROOT, AM.ACTIVE_SCALE)
 
     num_in_scale = notes_in_scale.index(note)+1
 
     return num_in_scale
 
 class LetterBox():
-    def __init__(self, pos, size, letter, box_color, text_color):
+    def __init__(self, id, pos, size, letter, box_color, text_color):
+        self.id = id
         self.rect = pygame.Rect(pos[0], pos[1], size, size)
 
         self.letter = letter
 
         self.box_color = box_color
         self.text_color = text_color
-        self.font = AppManager.getFont(size - 10)
+        self.font = AM.getFont(size - 10)
+
+        self.up_arrow_rect = pygame.Rect(self.rect.left, self.rect.top - 20, self.rect.width, 15)
+        self.down_arrow_rect = pygame.Rect(self.rect.left, self.rect.bottom + 5, self.rect.width, 15)
+
+        self.up_verts = [self.up_arrow_rect.bottomleft, self.up_arrow_rect.bottomright, [self.up_arrow_rect.centerx, self.up_arrow_rect.top]]
+        self.down_verts = [self.down_arrow_rect.topleft, self.down_arrow_rect.topright, [self.down_arrow_rect.centerx, self.down_arrow_rect.bottom]]
     
     def Draw(self, win):
+        self.letter = AM.GUITAR_TUNING[self.id].capitalize()
         note_label = self.font.render(self.letter, True, self.text_color)
         note_label_size = self.font.size(self.letter)
         note_label_pos = (self.rect.centerx - note_label_size[0]/2 , self.rect.centery - note_label_size[1]/2 )
 
         pygame.draw.rect(win, self.box_color, self.rect)
         win.blit(note_label, note_label_pos)
+        pygame.draw.polygon(win, Colours.BLACK, self.up_verts)
+        pygame.draw.polygon(win, Colours.BLACK, self.down_verts)
+
+    def CheckArrowClicks(self, mousePos):
+        if self.up_arrow_rect.collidepoint(mousePos[0], mousePos[1]):
+            print(self.id,"UP")
+            current_note_index = ALL_NOTES.index(AM.GUITAR_TUNING[self.id])
+            new_note = AM.ALL_NOTES[(current_note_index+1) % len(AM.ALL_NOTES)]
+            AM.GUITAR_TUNING[self.id] = new_note
+
+        elif self.down_arrow_rect.collidepoint(mousePos[0], mousePos[1]):
+            print(self.id,"DOWN")
+            current_note_index = AM.ALL_NOTES.index(AM.GUITAR_TUNING[self.id])
+            new_note = AM.ALL_NOTES[(current_note_index-1) % len(AM.ALL_NOTES)]
+            AM.GUITAR_TUNING[self.id] = new_note
+        
 
 class TuningSection():
     def __init__(self, pos, size, min_gap):
@@ -70,10 +94,10 @@ class TuningSection():
     def CreateSection(self):
         self.gap = (self.rect.width - NUM_STRINGS * self.box_size) / (NUM_STRINGS - 1)
 
-        for i, str_tuning in enumerate(AppManager.GUITAR_TUNING):
+        for i, str_tuning in enumerate(AM.GUITAR_TUNING):
             xPos = self.rect.left + i * (self.box_size + self.gap)
             yPos = self.rect.centery - (self.box_size / 2)
-            lb = LetterBox((xPos, yPos), self.box_size, str_tuning.capitalize(), TUNING_BOX_COLOR, TUNING_LETTER_COLOR)
+            lb = LetterBox(i, (xPos, yPos), self.box_size, str_tuning.capitalize(), TUNING_BOX_COLOR, TUNING_LETTER_COLOR)
             self.all_text_boxes.append(lb)
 
     def DrawSection(self, win):
@@ -89,6 +113,8 @@ class GuitarString():
 
     def drawStringNotes(self, fretboard):
 
+        self.open_note = AM.GUITAR_TUNING[6-self.str_num]
+        # print(self.str_num, self.open_note)
         self.string_array = getStringArray(self.open_note)
         
         centre_y = fretboard.y_padding + fretboard.string_gap * (0.5 + self.str_num - 1)
@@ -101,13 +127,13 @@ class GuitarString():
             note_pos = open_note_xPos + i*fretboard.fret_spacing
             if i == 0:
                 note_pos += fretboard.fret_spacing/4
-            # pygame.draw.circle(fretboard.win, Colours.WHITE,(note_pos, centre_y), AppManager.NOTE_CIRCLE_RADIUS)
+            # pygame.draw.circle(fretboard.win, Colours.WHITE,(note_pos, centre_y), AM.NOTE_CIRCLE_RADIUS)
 
             special_note_colour = self.checkNoteHighlighted(note)
             note_colour = special_note_colour if special_note_colour else Colours.WHITE
-            drawCircle(fretboard.win, note_colour, Colours.BLACK,(note_pos, centre_y), AppManager.NOTE_CIRCLE_RADIUS)
+            drawCircle(fretboard.win, note_colour, Colours.BLACK,(note_pos, centre_y), AM.NOTE_CIRCLE_RADIUS)
 
-            if AppManager.SHOW_SCALE_NUMBERS and self.checkNoteHighlighted(note):
+            if AM.SHOW_SCALE_NUMBERS and self.checkNoteHighlighted(note):
                 note_num = str(getNoteNumber(note))
                 note_label = NOTE_FONT.render(note_num, True, Colours.BLACK)
                 note_label_size = NOTE_FONT.size(note_num)
@@ -120,10 +146,10 @@ class GuitarString():
             fretboard.win.blit(note_label, note_label_pos)
 
     def checkNoteHighlighted(self, note):
-        if AppManager.ACTIVE_ROOT == None or AppManager.ACTIVE_SCALE == None:
+        if AM.ACTIVE_ROOT == None or AM.ACTIVE_SCALE == None:
             return False
         
-        notes_in_scale = AppManager.getNotesInScale(AppManager.ACTIVE_ROOT, AppManager.ACTIVE_SCALE)
+        notes_in_scale = AM.getNotesInScale(AM.ACTIVE_ROOT, AM.ACTIVE_SCALE)
         
         if notes_in_scale.__contains__(note):
             note_index = notes_in_scale.index(note)
@@ -164,7 +190,7 @@ class Fretboard():
 
         self.fret_spacing = self.neck_len/12
 
-        for i, open_note in enumerate(AppManager.GUITAR_TUNING):
+        for i, open_note in enumerate(AM.GUITAR_TUNING):
             self.all_strings.append(GuitarString(6 - i, open_note))
         
         tuning_sect_width = 800
@@ -179,14 +205,14 @@ class Fretboard():
 
 
     def drawFretboard(self):
-        print(f"Note circle radius: {AppManager.NOTE_CIRCLE_RADIUS}")
+        print(f"Note circle radius: {AM.NOTE_CIRCLE_RADIUS}")
 
         # Draw Background colour
         pygame.draw.rect(self.win, self.bg_color, (0,0,self.zone_width, self.zone_height))
 
-        if AppManager.ACTIVE_ROOT and AppManager.ACTIVE_SCALE:
+        if AM.ACTIVE_ROOT and AM.ACTIVE_SCALE:
             # Title showing current root note and scale
-            active_setup_text = f"{AppManager.ACTIVE_ROOT} {AppManager.ACTIVE_SCALE}"
+            active_setup_text = f"{AM.ACTIVE_ROOT} {AM.ACTIVE_SCALE}"
         else:
             active_setup_text = "No Scale Selected"
         text = FONT.render(active_setup_text, True, Colours.WHITE)
@@ -221,4 +247,8 @@ class Fretboard():
             string.drawStringNotes(self)
         
         self.tuning_settings.DrawSection(self.win)
+
+    def checkMouseInput(self, mousePos):
+        for tuning_box in self.tuning_settings.all_text_boxes:
+            tuning_box.CheckArrowClicks(mousePos)
 
