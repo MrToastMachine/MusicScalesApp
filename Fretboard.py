@@ -203,6 +203,8 @@ class Fretboard():
     
         self.tuning_settings = TuningSection(tuning_sect_pos,tuning_sect_size, tuning_sect_min_gap)
 
+        # self.set_tunings = Set
+
 
     def drawFretboard(self):
         print(f"Note circle radius: {AM.NOTE_CIRCLE_RADIUS}")
@@ -247,6 +249,8 @@ class Fretboard():
             string.drawStringNotes(self)
         
         self.tuning_settings.DrawSection(self.win)
+
+        # self.setTuningMenu.DrawSection(self.win)
 
     def checkMouseInput(self, mousePos):
         for tuning_box in self.tuning_settings.all_text_boxes:

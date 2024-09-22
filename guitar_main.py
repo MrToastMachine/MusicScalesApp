@@ -1,3 +1,5 @@
+# TODO: https://www.scales-chords.com/scalefinder.php
+
 import pygame
 from Fretboard import Fretboard
 from RootNoteMenu import RootNoteMenu
@@ -10,6 +12,8 @@ from AppManager import FONT
 
 pygame.init()
 AppManager.readInScales()
+
+
 
 FPS = 60
 # RES = (1000, 600)
