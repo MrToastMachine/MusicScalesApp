@@ -17,23 +17,35 @@ AppManager.readInScales()
 
 FPS = 60
 # RES = (1000, 600)
-RES = (1800, 700)
+RES = (1600, 900)
 win = pygame.display.set_mode(RES)
 clock = pygame.time.Clock()
 
 
 win.fill(Colours.BACKGROUND_COLOR)
 
-
-fretboard = Fretboard(win, (0,0), 1400, 600, 1200, 200, Colours.KEYB_BG_COLOR, Colours.BROWN)
-fretboard.drawFretboard()
-
+# TODO: Make section in code for all static size variables 
 ROOT_NOTE_BUTTON_SIZE = 50
 
-root_menu = RootNoteMenu((0,600),(1400, 100), ROOT_NOTE_BUTTON_SIZE, Colours.RNM_BG_COLOR, Colours.BUTTON_COLOR, Colours.BUTTON_COLOR_HIGHLIGHTED)
+# TODO: Pass in rects for each section instead of position and size -> neater
+
+FRETBOARD_AREA = pygame.Rect(0,0, 1200, 600)
+ROOT_NOTE_AREA = pygame.Rect(0,800, 1200, 100)
+SCALE_AREA = pygame.Rect(1200, 0, 400, 900)
+TUNING_MENU_AREA = pygame.Rect(0,600,1200,200)
+NECK_LEN = round(FRETBOARD_AREA.width * 0.8)
+
+fretboard = Fretboard(win, FRETBOARD_AREA.topleft, FRETBOARD_AREA.width, FRETBOARD_AREA.height, NECK_LEN, 200, Colours.KEYB_BG_COLOR, Colours.BROWN)
+fretboard.drawFretboard()
+
+
+root_menu = RootNoteMenu(ROOT_NOTE_AREA.topleft, (ROOT_NOTE_AREA.width, ROOT_NOTE_AREA.height), ROOT_NOTE_BUTTON_SIZE, Colours.RNM_BG_COLOR, Colours.BUTTON_COLOR, Colours.BUTTON_COLOR_HIGHLIGHTED, False)
 root_menu.drawMenu(win)
 
-scales_menu = ScalesMenu((1400,0), (400,700), 40, Colours.SCALES_BG_COLOR, Colours.BUTTON_COLOR, Colours.BUTTON_COLOR_HIGHLIGHTED)
+# tuning_menu = TuningMenu()
+pygame.draw.rect(win, Colours.BONE, TUNING_MENU_AREA, border_radius=10)
+
+scales_menu = ScalesMenu(SCALE_AREA.topleft, (SCALE_AREA.width, SCALE_AREA.height), 40, Colours.SCALES_BG_COLOR, Colours.BUTTON_COLOR, Colours.BUTTON_COLOR_HIGHLIGHTED)
 scales_menu.drawMenu(win)
 pygame.display.update()
 

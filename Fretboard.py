@@ -236,6 +236,7 @@ class Fretboard():
             dot_y_pos = self.zone_height - self.y_padding + dist_above_neck
             if DOT_POSITIONS.__contains__(i+1):
                 dot_pos = (fret_xPos + self.fret_spacing/2, dot_y_pos)
+                print(dot_pos)
                 pygame.draw.circle(self.win, Colours.BLACK, dot_pos, 3)
 
             elif DOUBLE_DOT_POSITIONS.__contains__(i+1):
