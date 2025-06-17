@@ -14,11 +14,13 @@ SECTION_PADDING = 10
 
 # Guitar Specific Parameters
 # GUITAR_TUNING = ['e','a','d','g','b','e']
-GUITAR_TUNING = ['c','g','e','g','c','c']
+# GUITAR_TUNING = ['c','g','e','g','c','c']
 SET_TUNINGS = {
     "Standard": ['e','a','d','g','b','e'],
     "Open C": ['c','g','e','g','c','c'],
 }
+
+GUITAR_TUNING = SET_TUNINGS["Standard"]
 
 NOTE_CIRCLE_RADIUS = 15
 
@@ -27,7 +29,7 @@ SHOW_SCALE_NUMBERS = False
 scales = {}
 
 def getFont(size): # Returns Press-Start-2P in the desired size
-    return pygame.font.Font(None, size)
+    return pygame.font.Font(None, int(size))
 
 def readInScales():
     with open('jsonScaleStorage.json', 'r') as sFile:

@@ -16,8 +16,8 @@ AppManager.readInScales()
 
 
 FPS = 60
-# RES = (1000, 600)
-RES = (1600, 900)
+RES = (1300, 600) 
+# RES = (1600, 900)
 win = pygame.display.set_mode(RES)
 clock = pygame.time.Clock()
 
@@ -25,14 +25,47 @@ clock = pygame.time.Clock()
 win.fill(Colours.BACKGROUND_COLOR)
 
 # TODO: Make section in code for all static size variables 
-ROOT_NOTE_BUTTON_SIZE = 50
 
 # TODO: Pass in rects for each section instead of position and size -> neater
 
-FRETBOARD_AREA = pygame.Rect(0,0, 1200, 600)
-ROOT_NOTE_AREA = pygame.Rect(0,800, 1200, 100)
-SCALE_AREA = pygame.Rect(1200, 0, 400, 900)
-TUNING_MENU_AREA = pygame.Rect(0,600,1200,200)
+# FRETBOARD_AREA = pygame.Rect(0,0, 1200, 600)
+# ROOT_NOTE_AREA = pygame.Rect(0,800, 1200, 100)
+# SCALE_AREA = pygame.Rect(1200, 0, 400, 900)
+# TUNING_MENU_AREA = pygame.Rect(0,600,1200,200)
+
+# TODO: Change all to percent of screen -> Normalize Res
+#  > Define section at pos [0->1, 0->1] with dims in same range
+
+def getResFrac(resAx, frac):
+    return int(RES[resAx] * frac)
+
+ROOT_NOTE_BUTTON_SIZE = getResFrac(0, 1/32)
+
+FRETBOARD_AREA_X = getResFrac(0, 0)
+FRETBOARD_AREA_Y = getResFrac(1, 0)
+FRETBOARD_AREA_W = getResFrac(0, 3/4)
+FRETBOARD_AREA_H = getResFrac(1, 2/3)
+
+ROOT_NOTE_AREA_X = getResFrac(0, 0)
+ROOT_NOTE_AREA_Y = getResFrac(1, 8/9)
+ROOT_NOTE_AREA_W = getResFrac(0, 3/4)
+ROOT_NOTE_AREA_H = getResFrac(1, 1/9)
+
+SCALE_AREA_X = getResFrac(0, 3/4) 
+SCALE_AREA_Y = getResFrac(1, 0) 
+SCALE_AREA_W = getResFrac(0, 1/4)
+SCALE_AREA_H = getResFrac(1, 1) 
+
+TUNING_MENU_AREA_X = getResFrac(0, 0)
+TUNING_MENU_AREA_Y = getResFrac(1, 1)
+TUNING_MENU_AREA_W = getResFrac(0, 3/4)
+TUNING_MENU_AREA_H = getResFrac(1, 2/9)
+
+FRETBOARD_AREA = pygame.Rect( FRETBOARD_AREA_X, FRETBOARD_AREA_Y, FRETBOARD_AREA_W, FRETBOARD_AREA_H)
+ROOT_NOTE_AREA = pygame.Rect(ROOT_NOTE_AREA_X, ROOT_NOTE_AREA_Y, ROOT_NOTE_AREA_W, ROOT_NOTE_AREA_H)
+TUNING_MENU_AREA = pygame.Rect(TUNING_MENU_AREA_X, TUNING_MENU_AREA_Y, TUNING_MENU_AREA_W, TUNING_MENU_AREA_H)
+SCALE_AREA = pygame.Rect(SCALE_AREA_X, SCALE_AREA_Y, SCALE_AREA_W, SCALE_AREA_H)
+
 NECK_LEN = round(FRETBOARD_AREA.width * 0.8)
 
 fretboard = Fretboard(win, FRETBOARD_AREA.topleft, FRETBOARD_AREA.width, FRETBOARD_AREA.height, NECK_LEN, 200, Colours.KEYB_BG_COLOR, Colours.BROWN)
@@ -43,7 +76,7 @@ root_menu = RootNoteMenu(ROOT_NOTE_AREA.topleft, (ROOT_NOTE_AREA.width, ROOT_NOT
 root_menu.drawMenu(win)
 
 # tuning_menu = TuningMenu()
-pygame.draw.rect(win, Colours.BONE, TUNING_MENU_AREA, border_radius=10)
+# pygame.draw.rect(win, Colours.BONE, TUNING_MENU_AREA, border_radius=10)
 
 scales_menu = ScalesMenu(SCALE_AREA.topleft, (SCALE_AREA.width, SCALE_AREA.height), 40, Colours.SCALES_BG_COLOR, Colours.BUTTON_COLOR, Colours.BUTTON_COLOR_HIGHLIGHTED)
 scales_menu.drawMenu(win)
