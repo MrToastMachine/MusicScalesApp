@@ -198,7 +198,7 @@ class Fretboard():
         tuning_sect_size = [tuning_sect_width, tuning_sect_height]
         tuning_sect_min_gap = 50
         tuning_sect_xPos = self.rect.centerx - tuning_sect_width/2 
-        tuning_sect_yPos = self.rect.bottom - self.rect.height/16 * 3
+        tuning_sect_yPos = self.rect.bottom - self.rect.height/16 * 1
         tuning_sect_pos = [tuning_sect_xPos, tuning_sect_yPos]
     
         self.tuning_settings = TuningSection(tuning_sect_pos,tuning_sect_size, tuning_sect_min_gap)
@@ -236,6 +236,7 @@ class Fretboard():
             dot_y_pos = self.zone_height - self.y_padding + dist_above_neck
             if DOT_POSITIONS.__contains__(i+1):
                 dot_pos = (fret_xPos + self.fret_spacing/2, dot_y_pos)
+                print(dot_pos)
                 pygame.draw.circle(self.win, Colours.BLACK, dot_pos, 3)
 
             elif DOUBLE_DOT_POSITIONS.__contains__(i+1):

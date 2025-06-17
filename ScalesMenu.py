@@ -2,13 +2,13 @@ import pygame
 from button import Button
 from AppManager import ALL_NOTES
 from AppManager import FONT
-import AppManager
+import AppManager as AM
 from colours import Colours
 
 x_padding = 50
 y_padding = 50
 
-sect_pad = AppManager.SECTION_PADDING
+sect_pad = AM.SECTION_PADDING
 
 
 class ScalesMenu():
@@ -20,7 +20,7 @@ class ScalesMenu():
         self.button_area_height = self.height - 2*y_padding
         self.button_width = self.width - 2*x_padding
 
-        num_buttons = len(AppManager.scales)
+        num_buttons = len(AM.scales)
         self.button_gap = (self.button_area_height - num_buttons*self.button_height)/(num_buttons-1)
         self.all_buttons = []
 
@@ -37,20 +37,20 @@ class ScalesMenu():
     # Called once at instantiation
     def createMenu(self):
         self.rect = (self.xPos + sect_pad/2, self.yPos + sect_pad/2, self.width - sect_pad, self.height - sect_pad)
-        for i, note in enumerate(AppManager.scales):
+        for i, note in enumerate(AM.scales):
             xStart = self.xPos + self.x_padding
             yStart = self.y_padding + self.yPos + i*(self.button_height + self.button_gap)
 
             rect = pygame.Rect(xStart, yStart, self.button_width, self.button_height)
 
-            button = Button(rect, note, FONT, self.butt_colour, Colours.BLACK, None)
+            button = Button(rect, note, AM.getFont(self.button_height*0.6), self.butt_colour, Colours.BLACK, None)
 
             self.all_buttons.append(button)
 
     def drawMenu(self, screen):
-        pygame.draw.rect(screen, self.bg_colour, self.rect, border_radius=AppManager.SECTION_CORNER_RADIUS)
+        pygame.draw.rect(screen, self.bg_colour, self.rect, border_radius=AM.SECTION_CORNER_RADIUS)
         for butt in self.all_buttons:
-            if butt.text_input == AppManager.ACTIVE_SCALE:
+            if butt.text_input == AM.ACTIVE_SCALE:
                 butt.base_colour = self.butt_colour_highlighted
             else:
                 butt.base_colour = self.butt_colour
@@ -60,7 +60,7 @@ class ScalesMenu():
     def checkAllButtonsForInput(self, mousePos):
         for butt in self.all_buttons:
             if butt.checkForInput(mousePos):
-                AppManager.ACTIVE_SCALE = butt.text_input
+                AM.ACTIVE_SCALE = butt.text_input
                 print(butt.text_input)
                 return True
             
